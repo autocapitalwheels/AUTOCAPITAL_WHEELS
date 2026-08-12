@@ -75,7 +75,7 @@ export default function Header() {
               <img
                 src="/logo.png"
                 alt="AutoCapital Wheels Logo"
-                className="h-12 w-auto object-contain"
+                className="h-16 lg:h-[72px] w-auto object-contain"
                 onError={(e) => {
                   // Fallback if image not loaded
                   e.currentTarget.style.display = 'none';
