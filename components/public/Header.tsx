@@ -115,7 +115,7 @@ export default function Header() {
 
               {/* Login CTA */}
               <Link
-                href="/admin/login"
+                href="/login"
                 className="hidden lg:inline-flex items-center justify-center bg-[#171717] hover:bg-neutral-800 text-white font-bold px-6 py-2.5 rounded-lg text-xs tracking-wider transition-all duration-200"
               >
                 Login / Sign Up
