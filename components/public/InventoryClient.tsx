@@ -65,6 +65,7 @@ export default function InventoryClient() {
   }));
 
   const [availableMakes, setAvailableMakes] = useState<string[]>([]);
+  const [recommended, setRecommended] = useState<Vehicle[]>([]);
 
   useEffect(() => {
     fetch('/api/vehicles?per_page=100')
@@ -77,6 +78,19 @@ export default function InventoryClient() {
       })
       .catch((err) => console.error('Error fetching inventory makes:', err));
   }, []);
+
+  useEffect(() => {
+    if (vehicles.length === 0 && !loading) {
+      fetch('/api/vehicles?per_page=3')
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.success && json.data) {
+            setRecommended(json.data);
+          }
+        })
+        .catch((err) => console.error('Error loading fallback recommendations:', err));
+    }
+  }, [vehicles, loading]);
 
   const { isWishlisted, toggleWishlist } = useWishlist();
 
@@ -395,16 +409,35 @@ export default function InventoryClient() {
                 ))}
               </div>
             ) : vehicles.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="text-6xl mb-4">🔍</div>
-                <h3 className="font-display font-bold text-xl text-neutral-900 mb-2">No Vehicles Found</h3>
-                <p className="text-neutral-500 mb-6">Try adjusting your filters or search terms.</p>
-                <div className="flex gap-3 justify-center">
-                  <button onClick={clearFilters} className="btn-primary">Clear Filters</button>
-                  <a href="https://wa.me/918800243707" target="_blank" rel="noopener noreferrer" className="btn-secondary">
-                    Contact Us
-                  </a>
+              <div className="space-y-10">
+                <div className="text-center py-12 bg-[#121215] border border-neutral-800 rounded-2xl p-8">
+                  <div className="text-5xl mb-4">🔍</div>
+                  <h3 className="font-display font-bold text-lg text-white mb-2">No Direct Matches Found</h3>
+                  <p className="text-neutral-400 text-xs mb-6 max-w-sm mx-auto leading-relaxed">We couldn't find a vehicle matching those filters. Try clearing filters or WhatsApp us directly.</p>
+                  <div className="flex gap-3 justify-center">
+                    <button onClick={clearFilters} className="inline-flex items-center justify-center bg-[#b48d36] hover:bg-[#9a845a] text-white font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all cursor-pointer">Clear Filters</button>
+                    <a href="https://wa.me/918800243707" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center border border-neutral-800 text-white font-bold px-6 py-2.5 rounded-lg text-xs uppercase tracking-wider hover:border-white transition-all cursor-pointer">
+                      Request on WhatsApp
+                    </a>
+                  </div>
                 </div>
+
+                {recommended.length > 0 && (
+                  <div className="border-t border-neutral-800/80 pt-10">
+                    <h3 className="font-display font-bold text-sm text-neutral-400 uppercase tracking-widest mb-6 text-center lg:text-left">Recommended Premium Cars in Stock</h3>
+                    <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+                      {recommended.map((vehicle) => (
+                        <VehicleCard
+                          key={vehicle.id}
+                          vehicle={vehicle}
+                          variant="grid"
+                          isWishlisted={isWishlisted(vehicle.id)}
+                          onWishlistToggle={toggleWishlist}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <>
