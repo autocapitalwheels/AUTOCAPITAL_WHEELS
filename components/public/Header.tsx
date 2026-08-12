@@ -140,7 +140,7 @@ export default function Header() {
                     <User size={13} />
                     {user.user_metadata?.full_name || user.email?.split('@')[0].toUpperCase()}
                   </button>
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 hidden group-hover:block animate-fade-in-scale">
+                  <div className="absolute right-0 top-[90%] pt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 hidden group-hover:block animate-fade-in-scale">
                     <Link href="/profile" className="block px-4 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 hover:text-amber-500 transition-colors">MY PROFILE</Link>
                     <Link href="/profile?tab=wishlist" className="block px-4 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 hover:text-amber-500 transition-colors">MY WISHLIST</Link>
                     <button

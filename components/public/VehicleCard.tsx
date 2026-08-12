@@ -52,8 +52,8 @@ export default function VehicleCard({
               </Link>
               {onWishlistToggle && (
                 <button
-                  onClick={() => onWishlistToggle(vehicle.id)}
-                  className="flex-shrink-0 p-1 rounded-full hover:bg-neutral-100 transition-colors"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); onWishlistToggle(vehicle.id); }}
+                  className="flex-shrink-0 p-1 rounded-full hover:bg-neutral-100 transition-colors z-10 cursor-pointer"
                   aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
                 >
                   <Heart size={14} className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-neutral-400 hover:text-red-500'} />
@@ -98,7 +98,7 @@ export default function VehicleCard({
         {/* Wishlist button */}
         {onWishlistToggle && !isSold && (
           <button
-            onClick={(e) => { e.preventDefault(); onWishlistToggle(vehicle.id); }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onWishlistToggle(vehicle.id); }}
             className="absolute top-3 right-3 p-1.5 rounded-full bg-white/90 shadow-sm transition-all hover:scale-105 z-10 cursor-pointer"
             aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
           >
