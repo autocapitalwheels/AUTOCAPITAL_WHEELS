@@ -177,15 +177,15 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-neutral-950/30 backdrop-blur-md lg:hidden transition-all duration-500"
           onClick={() => setIsMenuOpen(false)}
         />
       )}      {/* Mobile Drawer */}
       <div
-        className={`fixed top-0 right-0 bottom-0 z-50 w-80 bg-[#f7f6f2] border-l border-neutral-200 shadow-2xl lg:hidden transform transition-transform duration-350 ease-in-out ${
+        className={`fixed top-0 right-0 bottom-0 z-50 w-80 bg-white/95 backdrop-blur-lg border-l border-neutral-200/40 shadow-2xl lg:hidden transform transition-transform duration-500 ease-out ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -208,10 +208,10 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className={`px-4 py-3 text-sm font-semibold tracking-widest uppercase transition-colors ${
+              className={`px-4 py-3.5 text-xs font-bold tracking-widest uppercase transition-all duration-300 hover:translate-x-1.5 hover:text-amber-500 block ${
                 pathname === link.href
-                  ? 'text-neutral-950 border-b-[1.5px] border-neutral-900 w-fit'
-                  : 'text-neutral-500 hover:text-neutral-950'
+                  ? 'text-amber-500 border-l-2 border-amber-500 pl-4 w-fit'
+                  : 'text-neutral-500 pl-4'
               }`}
             >
               {link.label}
@@ -219,7 +219,7 @@ export default function Header() {
           ))}
           {user ? (
             <>
-              <Link href="/profile" className="px-4 py-3 text-sm font-semibold tracking-widest uppercase text-neutral-500 hover:text-neutral-950 transition-colors">
+              <Link href="/profile" className="px-4 py-3.5 text-xs font-bold tracking-widest uppercase text-neutral-500 pl-4 hover:translate-x-1.5 hover:text-amber-500 transition-all duration-300 block">
                 My Profile
               </Link>
               <button
@@ -228,13 +228,13 @@ export default function Header() {
                   router.push('/');
                   router.refresh();
                 }}
-                className="px-4 py-3 text-sm font-semibold tracking-widest uppercase text-neutral-500 hover:text-neutral-950 transition-colors text-left w-full cursor-pointer"
+                className="px-4 py-3.5 text-xs font-bold tracking-widest uppercase text-neutral-500 pl-4 hover:translate-x-1.5 hover:text-amber-500 transition-all duration-300 text-left w-full cursor-pointer block"
               >
                 Log Out
               </button>
             </>
           ) : (
-            <Link href="/login" className="px-4 py-3 text-sm font-semibold tracking-widest uppercase text-neutral-500 hover:text-neutral-950 transition-colors">
+            <Link href="/login" className="px-4 py-3.5 text-xs font-bold tracking-widest uppercase text-neutral-500 pl-4 hover:translate-x-1.5 hover:text-amber-500 transition-all duration-300 block">
               Login / Sign Up
             </Link>
           )}
