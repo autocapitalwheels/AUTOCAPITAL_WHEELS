@@ -126,11 +126,11 @@ export default function Header() {
             <div className="flex items-center gap-6">
               {/* Phone contact */}
               <a
-                href="tel:+917840815818"
+                href="tel:+918800243707"
                 className="hidden xl:flex items-center gap-2 text-xs font-bold text-neutral-800 hover:text-neutral-950"
               >
                 <Phone size={14} className="text-neutral-600" />
-                +91 78408 15818
+                +91 88002 43707
               </a>
 
               {/* Login / Profile CTA */}
