@@ -52,7 +52,8 @@ export default function HeroSection() {
       
       {/* Full-width background image/video slideshow */}
       {slides.map((slide, index) => {
-        const isVideo = slide.endsWith('.mp4') || slide.endsWith('.webm') || slide.includes('/hero/hero_slide_') && !slide.includes('.png') && !slide.includes('.jpg');
+        const lower = slide.toLowerCase();
+        const isVideo = lower.endsWith('.mp4') || lower.endsWith('.webm') || lower.endsWith('.mov') || lower.endsWith('.m4v') || (lower.includes('/hero/') && !lower.includes('.png') && !lower.includes('.jpg') && !lower.includes('.jpeg') && !lower.includes('.webp'));
         return (
           <div 
             key={slide}

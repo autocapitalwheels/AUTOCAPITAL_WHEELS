@@ -10,6 +10,8 @@ import TestimonialsSection from '@/components/public/TestimonialsSection';
 import FAQSection from '@/components/public/FAQSection';
 import type { Vehicle, Testimonial, FAQ } from '@/types';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'AutoCapital Wheels — Trusted Pre-Owned Cars in Delhi',
   description: 'Buy and sell trusted pre-owned cars in Delhi. AutoCapital Wheels offers quality second-hand cars with transparent pricing and honest deals.',
