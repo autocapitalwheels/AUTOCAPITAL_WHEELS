@@ -10,7 +10,7 @@ import { formatPrice, getVehicleTitle, getWhatsAppUrl, getVehicleWhatsAppMessage
 import { WHATSAPP_NUMBER, PREFERRED_TIMES } from '@/lib/constants';
 
 interface EnquiryModalProps {
-  vehicle: Vehicle;
+  vehicle?: Vehicle;
   onClose: () => void;
   defaultType?: 'enquiry' | 'test_drive';
 }
@@ -20,7 +20,11 @@ type FormState = 'idle' | 'loading' | 'success' | 'error';
 export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry' }: EnquiryModalProps) {
   const [formState, setFormState] = useState<FormState>('idle');
   const [enquiryId, setEnquiryId] = useState('');
-  const title = getVehicleTitle(vehicle);
+  
+  // Dynamic vehicle list states
+  const [availableVehicles, setAvailableVehicles] = useState<Vehicle[]>([]);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(vehicle || null);
+  const [loadingStock, setLoadingStock] = useState(false);
 
   const {
     register,
@@ -30,12 +34,36 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
   } = useForm<any>({
     resolver: zodResolver(enquirySchema) as any,
     defaultValues: {
-      vehicle_id: vehicle.id,
+      vehicle_id: vehicle?.id || '',
       preferred_contact: 'Phone',
       test_drive_requested: defaultType === 'test_drive',
     },
   });
   const errors = formErrorsState.errors as any;
+
+  // Load available vehicles if no specific vehicle is pre-selected
+  useEffect(() => {
+    if (!vehicle) {
+      setLoadingStock(true);
+      fetch('/api/vehicles?per_page=50')
+        .then((res) => res.json())
+        .then((json) => {
+          if (json.success && json.data) {
+            setAvailableVehicles(json.data);
+          }
+        })
+        .catch((err) => console.error('Error loading quote stock:', err))
+        .finally(() => setLoadingStock(false));
+    }
+  }, [vehicle]);
+
+  const handleVehicleChange = (vehicleId: string) => {
+    const found = availableVehicles.find((v) => v.id === vehicleId) || null;
+    setSelectedVehicle(found);
+    setValue('vehicle_id', vehicleId);
+  };
+
+  const title = selectedVehicle ? getVehicleTitle(selectedVehicle) : 'Select a Vehicle';
 
   // Close on Escape key
   useEffect(() => {
@@ -82,8 +110,8 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
               {defaultType === 'test_drive' ? 'Request Test Drive' : 'Get Quotation'}
             </h2>
             <p className="text-sm text-neutral-500 mt-0.5">{title}</p>
-            {vehicle.price && (
-              <p className="text-sm font-semibold text-neutral-900 mt-0.5">{formatPrice(vehicle.price)}</p>
+            {selectedVehicle && selectedVehicle.price && (
+              <p className="text-sm font-semibold text-neutral-900 mt-0.5">{formatPrice(selectedVehicle.price)}</p>
             )}
           </div>
           <button
@@ -132,8 +160,37 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
 
         {/* Form */}
         {formState !== 'success' && (
-          <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
             <input type="hidden" {...register('vehicle_id')} />
+
+            {/* Vehicle Selector Dropdown if no vehicle passed */}
+            {!vehicle && (
+              <div>
+                <label htmlFor="enq-vehicle-select" className="form-label">Select Car of Interest *</label>
+                {loadingStock ? (
+                  <div className="flex items-center gap-2 text-xs text-neutral-400 py-2.5">
+                    <Loader2 className="animate-spin text-amber-500" size={14} />
+                    Loading available stock...
+                  </div>
+                ) : (
+                  <select
+                    id="enq-vehicle-select"
+                    className={`form-input text-xs font-semibold ${errors.vehicle_id ? 'error' : ''}`}
+                    onChange={(e) => handleVehicleChange(e.target.value)}
+                    value={selectedVehicle?.id || ''}
+                    required
+                  >
+                    <option value="" disabled>Choose a vehicle from stock...</option>
+                    {availableVehicles.map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.year} {v.make} {v.model} {v.variant ? ` ${v.variant}` : ''} (₹{(v.price / 100000).toFixed(2)} Lakh)
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {errors.vehicle_id && <p className="form-error">{errors.vehicle_id.message}</p>}
+              </div>
+            )}
 
             {/* Name */}
             <div>

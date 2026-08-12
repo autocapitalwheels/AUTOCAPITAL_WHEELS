@@ -132,7 +132,6 @@ export default function BuyingProcess() {
 
       {showEnquiry && (
         <EnquiryModal
-          vehicle={sampleVehicle}
           onClose={() => setShowEnquiry(false)}
         />
       )}
