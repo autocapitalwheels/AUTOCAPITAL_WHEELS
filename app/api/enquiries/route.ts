@@ -32,7 +32,13 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+
+    // Sanitize optional UUID fields — empty string should be treated as undefined
+    if (body.vehicle_id === '') body.vehicle_id = undefined;
+    if (body.user_id === '') body.user_id = undefined;
+
     const parseResult = enquirySchema.safeParse(body);
+
 
     if (!parseResult.success) {
       return NextResponse.json(

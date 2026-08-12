@@ -168,10 +168,19 @@ export default function Header() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden p-2 rounded-md transition-colors duration-200 text-white hover:bg-white/10"
+                className="lg:hidden p-2.5 rounded-lg transition-all duration-200 hover:bg-white/10 active:scale-95"
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                style={{ color: '#ffffff' }}
               >
-                {isMenuOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
+                {isMenuOpen ? (
+                  <X size={26} strokeWidth={3} style={{ color: '#ffffff' }} />
+                ) : (
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                  </svg>
+                )}
               </button>
             </div>
           </div>

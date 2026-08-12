@@ -61,9 +61,10 @@ export default function TestDriveModal({ vehicle, onClose }: TestDriveModalProps
         slug: vehicle.slug,
       };
 
-      const { error: insertError } = await supabase
-        .from('test_drive_requests')
-        .insert({
+      const res = await fetch('/api/test-drives', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           customer_name: formData.name,
           customer_phone: formData.phone,
           customer_email: formData.email || null,
@@ -73,29 +74,25 @@ export default function TestDriveModal({ vehicle, onClose }: TestDriveModalProps
           message: formData.message || null,
           vehicle_id: vehicle.id,
           vehicle_snapshot: vehicleSnapshot,
-          status: 'NEW',
           user_id: userId,
-        });
+        }),
+      });
 
-      if (insertError) {
-        console.error('Test drive submit error:', insertError);
-        setError('Failed to book test drive. Please try again.');
-      } else {
+      const json = await res.json();
+
+      if (json.success) {
         setSuccess(true);
-        // Track analytics event
-        await supabase.from('analytics_events').insert({
-          event_type: 'test_drive_submitted',
-          vehicle_id: vehicle.id,
-          metadata: { make: vehicle.make, model: vehicle.model },
-        });
+      } else {
+        setError(json.error || 'Failed to book test drive. Please try again.');
       }
     } catch (err) {
       console.error(err);
-      setError('An unexpected error occurred.');
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">

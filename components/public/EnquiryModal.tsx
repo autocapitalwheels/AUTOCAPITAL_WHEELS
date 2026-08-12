@@ -97,7 +97,13 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
   const onSubmit = async (data: EnquiryFormValues) => {
     setFormState('loading');
     try {
-      const payload = { ...data, user_id: userId };
+      // Sanitize empty UUID strings
+      const payload: any = {
+        ...data,
+        user_id: userId || undefined,
+        vehicle_id: data.vehicle_id || undefined,
+      };
+
       const res = await fetch('/api/enquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -108,12 +114,15 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
         setEnquiryId(json.data?.enquiry_id || '');
         setFormState('success');
       } else {
+        console.error('[EnquiryModal] API error:', json);
         setFormState('error');
       }
-    } catch {
+    } catch (err) {
+      console.error('[EnquiryModal] Submit error:', err);
       setFormState('error');
     }
   };
+
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
