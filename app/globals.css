@@ -805,7 +805,7 @@ h1, h2, h3, h4, h5, h6, strong, b, .font-bold, .font-extrabold, .font-semibold {
 }
 
 /* Force all sections and containers to be dark */
-section, header, footer, div, .container, .container-custom {
+section, footer {
   background-color: transparent;
 }
 
