@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useWishlist } from '@/lib/hooks/useWishlist';
-import { SlidersHorizontal, LayoutGrid, List, X, ChevronDown, Search } from 'lucide-react';
+import { SlidersHorizontal, LayoutGrid, List, X, ChevronDown, Search, Check } from 'lucide-react';
 import VehicleCard from './VehicleCard';
 import type { Vehicle, VehicleSortOption } from '@/types';
 import { CAR_MAKES, FUEL_TYPES, TRANSMISSION_TYPES, BODY_TYPES, VEHICLE_CATEGORIES, SORT_OPTIONS } from '@/lib/constants';
@@ -66,6 +66,7 @@ export default function InventoryClient() {
 
   const [availableMakes, setAvailableMakes] = useState<string[]>([]);
   const [recommended, setRecommended] = useState<Vehicle[]>([]);
+  const [openMakeDropdown, setOpenMakeDropdown] = useState(false);
 
   useEffect(() => {
     fetch('/api/vehicles?per_page=100')
@@ -154,17 +155,39 @@ export default function InventoryClient() {
       </div>
 
       {/* Make */}
-      <div>
+      <div className="relative">
         <p className="filter-section-title">Make</p>
-        <select
-          value={filters.make}
-          onChange={(e) => updateFilter('make', e.target.value)}
-          className="form-input text-sm cursor-pointer"
-          id="filter-make"
+        <button
+          type="button"
+          onClick={() => setOpenMakeDropdown(!openMakeDropdown)}
+          className="w-full flex items-center justify-between text-xs font-semibold px-4 py-3 bg-[#16161a] border border-neutral-800 rounded-lg hover:border-amber-500/50 text-white transition-all duration-300 text-left cursor-pointer"
+          id="filter-make-btn"
         >
-          <option value="">All Makes</option>
-          {availableMakes.map((make) => <option key={make} value={make}>{make}</option>)}
-        </select>
+          <span className="truncate">{filters.make || 'All Makes'}</span>
+          <ChevronDown size={14} className={`text-neutral-500 transition-transform duration-300 ${openMakeDropdown ? 'rotate-180' : ''}`} />
+        </button>
+
+        {openMakeDropdown && (
+          <div className="absolute left-0 right-0 mt-2 bg-[#16161a] border border-neutral-800 rounded-xl shadow-2xl max-h-60 overflow-y-auto z-50 py-1.5 animate-fade-in scrollbar-thin">
+            <div
+              onClick={() => { updateFilter('make', ''); setOpenMakeDropdown(false); }}
+              className="flex items-center justify-between px-4 py-2 hover:bg-[#b48d36]/10 text-xs font-semibold text-white cursor-pointer transition-all"
+            >
+              <span>All Makes</span>
+              {!filters.make && <Check size={12} className="text-[#b48d36]" />}
+            </div>
+            {availableMakes.map((make) => (
+              <div
+                key={make}
+                onClick={() => { updateFilter('make', make); setOpenMakeDropdown(false); }}
+                className="flex items-center justify-between px-4 py-2 hover:bg-[#b48d36]/10 text-xs font-semibold text-white cursor-pointer transition-all"
+              >
+                <span>{make}</span>
+                {filters.make === make && <Check size={12} className="text-[#b48d36]" />}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Body Type */}

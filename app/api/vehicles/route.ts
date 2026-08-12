@@ -89,9 +89,15 @@ export async function GET(request: NextRequest) {
     };
 
     if (filters.search) {
-      query = query.or(
-        `make.ilike.%${filters.search}%,model.ilike.%${filters.search}%,variant.ilike.%${filters.search}%`
-      );
+      const searchTerms = filters.search.trim().split(/\s+/).filter(Boolean);
+      if (searchTerms.length > 0) {
+        const orConditions = searchTerms.flatMap((term) => [
+          `make.ilike.%${term}%`,
+          `model.ilike.%${term}%`,
+          `variant.ilike.%${term}%`,
+        ]);
+        query = query.or(orConditions.join(','));
+      }
     }
     if (filters.make) query = query.ilike('make', `%${filters.make}%`);
     if (filters.model) query = query.ilike('model', `%${filters.model}%`);
@@ -147,8 +153,17 @@ export async function GET(request: NextRequest) {
     const max_price = searchParams.get('max_price');
 
     if (search) {
-      const s = search.toLowerCase();
-      list = list.filter((v) => v.make.toLowerCase().includes(s) || v.model.toLowerCase().includes(s));
+      const searchTerms = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      if (searchTerms.length > 0) {
+        list = list.filter((v) =>
+          searchTerms.some(
+            (term) =>
+              v.make.toLowerCase().includes(term) ||
+              v.model.toLowerCase().includes(term) ||
+              (v.variant && v.variant.toLowerCase().includes(term))
+          )
+        );
+      }
     }
     if (make) list = list.filter((v) => v.make.toLowerCase() === make.toLowerCase());
     if (fuel_type) list = list.filter((v) => v.fuel_type === fuel_type);

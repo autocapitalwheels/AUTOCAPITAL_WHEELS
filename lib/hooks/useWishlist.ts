@@ -81,14 +81,29 @@ export function useWishlist() {
 
   const toggleWishlist = async (vehicleId: string) => {
     if (!user) {
-      // Redirect to login if not authenticated
       window.location.href = '/login';
       return;
     }
 
-    setLoading(true);
+    const currentlyListed = wishlistItems.includes(vehicleId);
+
+    // 1. Optimistic Update (Instant feedback!)
+    if (currentlyListed) {
+      setWishlistItems((prev) => prev.filter((id) => id !== vehicleId));
+    } else {
+      setWishlistItems((prev) => [...prev, vehicleId]);
+    }
+
+    // Dispatch custom toast event instantly
+    const toastMsg = currentlyListed ? 'Removed from Wishlist' : 'Added to Wishlist';
+    window.dispatchEvent(
+      new CustomEvent('acw-toast', {
+        detail: { message: toastMsg, type: currentlyListed ? 'info' : 'success' },
+      })
+    );
+
+    // 2. Trigger Database Sync in the background
     try {
-      // Find wishlist
       let { data: wishlists } = await supabase
         .from('wishlists')
         .select('id')
@@ -97,7 +112,6 @@ export function useWishlist() {
       let wishlistId = wishlists && wishlists[0]?.id;
 
       if (!wishlistId) {
-        // Create one
         const { data: newW } = await supabase
           .from('wishlists')
           .insert({ user_id: user.id })
@@ -107,19 +121,20 @@ export function useWishlist() {
       }
 
       if (wishlistId) {
-        if (isWishlisted(vehicleId)) {
-          // Remove from wishlist
+        if (currentlyListed) {
+          // Remove from database
           const { error } = await supabase
             .from('wishlist_items')
             .delete()
             .eq('wishlist_id', wishlistId)
             .eq('vehicle_id', vehicleId);
 
-          if (!error) {
-            setWishlistItems((prev) => prev.filter((id) => id !== vehicleId));
+          if (error) {
+            // Revert state if query failed
+            setWishlistItems((prev) => [...prev, vehicleId]);
           }
         } else {
-          // Add to wishlist
+          // Add to database
           const { error } = await supabase
             .from('wishlist_items')
             .insert({
@@ -127,15 +142,20 @@ export function useWishlist() {
               vehicle_id: vehicleId,
             });
 
-          if (!error) {
-            setWishlistItems((prev) => [...prev, vehicleId]);
+          if (error) {
+            // Revert state if query failed
+            setWishlistItems((prev) => prev.filter((id) => id !== vehicleId));
           }
         }
       }
     } catch (e) {
       console.error('Error toggling wishlist:', e);
-    } finally {
-      setLoading(false);
+      // Revert state on error
+      if (currentlyListed) {
+        setWishlistItems((prev) => [...prev, vehicleId]);
+      } else {
+        setWishlistItems((prev) => prev.filter((id) => id !== vehicleId));
+      }
     }
   };
 
