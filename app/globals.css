@@ -780,3 +780,76 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0;
   }
 }
+
+/* ============================================================
+   PREMIUM DARK MODE THEME OVERRIDES (WHOLE SITE)
+   ============================================================ */
+
+body {
+  background-color: #0a0a0c !important;
+  color: #f3f4f6 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff !important;
+}
+
+/* Background overrides */
+.bg-white, .bg-neutral-50, .bg-gray-50, .bg-neutral-100 {
+  background-color: #121215 !important;
+}
+
+.text-neutral-900, .text-neutral-800, .text-neutral-700, .text-gray-900, .text-gray-800 {
+  color: #f3f4f6 !important;
+}
+
+.text-neutral-600, .text-neutral-500, .text-neutral-400, .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+/* Border overrides */
+.border, .border-neutral-200, .border-neutral-200/80, .border-neutral-200/60, .border-neutral-200/50, .border-neutral-100, .border-gray-100, .border-gray-200 {
+  border-color: #1f1f24 !important;
+}
+
+/* Form input styling overrides */
+.form-input, select, textarea, input[type="text"], input[type="email"], input[type="password"], input[type="tel"] {
+  background-color: #16161a !important;
+  border-color: #2e2e36 !important;
+  color: #ffffff !important;
+}
+
+.form-input:focus, select:focus, textarea:focus {
+  border-color: #b48d36 !important;
+  box-shadow: 0 0 0 3px rgba(180, 141, 54, 0.15) !important;
+}
+
+/* Custom cards and grids dark style */
+.bg-neutral-50, .bg-gray-50 {
+  background-color: #16161a !important;
+}
+
+.bg-neutral-100 {
+  background-color: #1c1c21 !important;
+}
+
+.shadow-sm, .shadow-md, .shadow-lg, .shadow-xl {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Links inside lists */
+.text-neutral-600:hover, .text-neutral-500:hover {
+  color: #ffffff !important;
+}
+
+/* Header hover dropdown support */
+.group-hover\:block {
+  background-color: #0f0f11 !important;
+  border: 1px solid #1f1f24 !important;
+}
+
+/* Admin and Profile page adjustments */
+.admin-card, .profile-card {
+  background-color: #121215 !important;
+  border: 1px solid #1f1f24 !important;
+}

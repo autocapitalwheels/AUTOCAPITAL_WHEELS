@@ -335,7 +335,6 @@ function CustomerLoginForm() {
 
               {/* Form implementation */}
               <div className={isSignUp ? 'hidden' : ''}>
-                /* Login Form */
                 <form onSubmit={handleLoginSubmit(onLogin)} className="space-y-4">
                   <div>
                     <label htmlFor="cust-login-email" className="form-label">Email Address</label>
@@ -389,7 +388,6 @@ function CustomerLoginForm() {
               </div>
 
               <div className={!isSignUp ? 'hidden' : ''}>
-                /* Signup Form */
                 <form onSubmit={handleSignupSubmit(onSignup)} className="space-y-4">
                   <div>
                     <label htmlFor="cust-reg-name" className="form-label">Full Name *</label>
