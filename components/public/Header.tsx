@@ -168,10 +168,10 @@ export default function Header() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`lg:hidden p-2 rounded-md transition-colors duration-200 ${burgerColor}`}
+                className="lg:hidden p-2 rounded-md transition-colors duration-200 text-white hover:bg-white/10"
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               >
-                {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
+                {isMenuOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
               </button>
             </div>
           </div>

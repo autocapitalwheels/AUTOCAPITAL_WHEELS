@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useWishlist } from '@/lib/hooks/useWishlist';
 import VehicleCard from '@/components/public/VehicleCard';
-import { Loader2, Heart, User, LogOut, Phone, Mail, Award, Calendar, Clock, MapPin, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { Loader2, Heart, User, LogOut, Phone, Mail, Award, Calendar, Clock, MapPin, MessageSquare, Car } from 'lucide-react';
 import Link from 'next/link';
 
 function ProfileContent() {
@@ -20,9 +20,10 @@ function ProfileContent() {
   const [loadingVehicles, setLoadingVehicles] = useState(false);
   const [userProfile, setUserProfile] = useState<any>({ name: '', email: '', phone: '' });
 
-  // Test Drives & Enquiries states
+  // Test Drives, Enquiries & Sell Requests states
   const [testDrives, setTestDrives] = useState<any[]>([]);
   const [enquiries, setEnquiries] = useState<any[]>([]);
+  const [sellRequests, setSellRequests] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
@@ -86,13 +87,22 @@ function ProfileContent() {
         if (tdData) setTestDrives(tdData);
 
         // Load enquiries (Quotations)
-        const { data: enqData, error: enqErr } = await supabase
+        const { data: enqData } = await supabase
           .from('vehicle_enquiries')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
         if (enqData) setEnquiries(enqData);
+
+        // Load sell requests
+        const { data: sellData } = await supabase
+          .from('sell_requests')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (sellData) setSellRequests(sellData);
       } catch (err) {
         console.error('Error loading history:', err);
       } finally {
@@ -100,7 +110,7 @@ function ProfileContent() {
       }
     };
 
-    if (user && (activeTab === 'test-drives' || activeTab === 'quotations')) {
+    if (user && (activeTab === 'test-drives' || activeTab === 'quotations' || activeTab === 'sell-requests')) {
       loadHistory();
     }
   }, [user, activeTab, supabase]);
@@ -130,9 +140,21 @@ function ProfileContent() {
 
   // Status style helper
   const getStatusBadge = (status: string) => {
-    const s = status.toUpperCase();
+    const s = (status || 'NEW').toUpperCase();
     if (s === 'CONFIRMED' || s === 'APPROVED' || s === 'CONVERTED') {
       return <span className="px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-wider bg-emerald-950/40 text-emerald-400 border border-emerald-900/60">Approved / Confirmed</span>;
+    }
+    if (s === 'OFFER_MADE') {
+      return <span className="px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-wider bg-blue-950/40 text-blue-400 border border-blue-900/60">Offer Made</span>;
+    }
+    if (s === 'NEGOTIATION') {
+      return <span className="px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-wider bg-violet-950/40 text-violet-400 border border-violet-900/60">In Negotiation</span>;
+    }
+    if (s === 'INSPECTION_SCHEDULED') {
+      return <span className="px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-wider bg-sky-950/40 text-sky-400 border border-sky-900/60">Inspection Scheduled</span>;
+    }
+    if (s === 'UNDER_REVIEW') {
+      return <span className="px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-wider bg-orange-950/40 text-orange-400 border border-orange-900/60">Under Review</span>;
     }
     if (s === 'CANCELLED' || s === 'REJECTED' || s === 'CLOSED') {
       return <span className="px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-wider bg-red-950/40 text-red-400 border border-red-900/60">Cancelled / Rejected</span>;
@@ -142,6 +164,7 @@ function ProfileContent() {
     }
     return <span className="px-2.5 py-1 text-[9px] font-bold rounded-lg uppercase tracking-wider bg-amber-950/40 text-[#b48d36] border border-[#b48d36]/30">Pending Review</span>;
   };
+
 
   return (
     <div className="min-h-screen bg-[#0a0a0c] pt-24 pb-16">
@@ -204,6 +227,15 @@ function ProfileContent() {
           >
             <MessageSquare size={13} />
             Quotations ({enquiries.length})
+          </button>
+          <button
+            onClick={() => router.push('/profile?tab=sell-requests')}
+            className={`pb-3 text-xs font-bold tracking-widest uppercase transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+              activeTab === 'sell-requests' ? 'text-white border-b-2 border-[#b48d36]' : 'text-neutral-500 hover:text-neutral-300'
+            }`}
+          >
+            <Car size={13} />
+            Sell Requests ({sellRequests.length})
           </button>
         </div>
 
@@ -429,6 +461,75 @@ function ProfileContent() {
                     </div>
                   );
                 })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Sell Requests tab content */}
+        {activeTab === 'sell-requests' && (
+          <div className="space-y-4">
+            {loadingHistory ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="animate-spin text-[#b48d36]" size={32} />
+              </div>
+            ) : sellRequests.length === 0 ? (
+              <div className="bg-[#121215] border border-neutral-800 rounded-2xl p-10 text-center shadow-xl">
+                <Car className="mx-auto text-neutral-600 mb-4" size={40} />
+                <h3 className="font-display font-bold text-lg text-white mb-2">No Sell Requests Submitted</h3>
+                <p className="text-xs text-neutral-400 font-light max-w-sm mx-auto mb-6">
+                  You haven't submitted any car sell requests yet. Want to sell your car? Fill in the details and we'll contact you with our best offer.
+                </p>
+                <Link href="/sell-car" className="btn-primary py-2.5 px-6 text-sm inline-flex">Sell Your Car</Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {sellRequests.map((req) => (
+                  <div key={req.id} className="bg-[#121215] border border-neutral-800 rounded-2xl p-5 flex flex-col md:flex-row justify-between gap-5 shadow-xl">
+                    <div className="space-y-3 flex-1">
+                      <div className="flex items-start gap-3 flex-wrap">
+                        <h3 className="font-display font-bold text-base text-white">
+                          {req.manufacturing_year} {req.make} {req.model}
+                        </h3>
+                        {req.variant && (
+                          <span className="text-[10px] text-neutral-400 bg-neutral-900 border border-neutral-800 px-2 py-0.5 rounded mt-0.5 font-medium">{req.variant}</span>
+                        )}
+                        <span className="text-xs text-neutral-500 font-medium">#{req.request_id}</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-2 gap-x-4 text-xs text-neutral-300">
+                        <div><span className="text-neutral-500">Fuel:</span> {req.fuel_type}</div>
+                        <div><span className="text-neutral-500">Transmission:</span> {req.transmission}</div>
+                        <div><span className="text-neutral-500">KMs:</span> {req.kms_driven?.toLocaleString('en-IN')}</div>
+                        <div><span className="text-neutral-500">Owners:</span> {req.number_of_owners}</div>
+                      </div>
+
+                      {req.expected_price && (
+                        <p className="text-xs text-white font-bold">
+                          Expected: ₹{(req.expected_price / 100000).toFixed(2)} Lakh
+                        </p>
+                      )}
+
+                      {req.admin_notes && (
+                        <div className="border border-amber-900/40 bg-amber-950/10 p-3.5 rounded-xl space-y-1">
+                          <span className="text-[9px] font-bold text-[#b48d36] tracking-wider uppercase">Dealer Response</span>
+                          <p className="text-xs text-neutral-300 font-medium leading-relaxed">{req.admin_notes}</p>
+                          {req.offered_price && (
+                            <p className="text-sm font-bold text-[#b48d36] mt-1">Offered Price: ₹{(req.offered_price / 100000).toFixed(2)} Lakh</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-row md:flex-col justify-between items-end md:items-end gap-3 self-start md:self-stretch">
+                      <div className="text-right">
+                        <span className="block text-[10px] text-neutral-500 uppercase tracking-widest font-bold mb-1">Request Status</span>
+                        {getStatusBadge(req.status)}
+                      </div>
+                      <span className="text-[10px] text-neutral-500">{formatDate(req.created_at)}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

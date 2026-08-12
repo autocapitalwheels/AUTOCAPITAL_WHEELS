@@ -41,6 +41,7 @@ export async function POST(request: NextRequest) {
     const insurance_status = formData.get('insurance_status') as string || null;
     const rc_available = formData.get('rc_available') !== 'false';
     const additional_info = formData.get('additional_info') as string || null;
+    const user_id = formData.get('user_id') as string || null;
 
     // Validate required fields
     if (!owner_name || !owner_phone || !owner_city || !make || !model || !manufacturing_year) {
@@ -86,6 +87,7 @@ export async function POST(request: NextRequest) {
         photo_storage_paths: photoStoragePaths,
         status: 'NEW',
         ip_address: ip,
+        user_id: user_id || null,
       })
       .select('request_id, id')
       .single();
