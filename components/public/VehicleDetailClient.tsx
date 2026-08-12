@@ -14,6 +14,7 @@ import {
 } from '@/lib/utils';
 import { WHATSAPP_NUMBER } from '@/lib/constants';
 import EnquiryModal from './EnquiryModal';
+import TestDriveModal from './TestDriveModal';
 import VehicleCard from './VehicleCard';
 
 interface VehicleDetailClientProps {
@@ -252,8 +253,8 @@ export default function VehicleDetailClient({ vehicle, similarVehicles }: Vehicl
                   </button>
                   <div className="grid grid-cols-2 gap-3">
                     <button
-                      onClick={() => { setShowEnquiry(true); }}
-                      className="btn-secondary py-3 justify-center text-sm"
+                      onClick={() => setShowTestDrive(true)}
+                      className="btn-secondary py-3 justify-center text-sm cursor-pointer"
                       id="request-test-drive-btn"
                     >
                       Request Test Drive
@@ -509,6 +510,11 @@ export default function VehicleDetailClient({ vehicle, similarVehicles }: Vehicl
       {/* Enquiry Modal */}
       {showEnquiry && (
         <EnquiryModal vehicle={vehicle} onClose={() => setShowEnquiry(false)} />
+      )}
+
+      {/* Test Drive Modal */}
+      {showTestDrive && (
+        <TestDriveModal vehicle={vehicle} onClose={() => setShowTestDrive(false)} />
       )}
     </>
   );
