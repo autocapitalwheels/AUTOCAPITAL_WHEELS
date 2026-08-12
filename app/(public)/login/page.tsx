@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -30,7 +32,7 @@ type LoginValues = z.infer<typeof loginSchema>;
 type SignupValues = z.infer<typeof signupSchema>;
 type PhoneCollectionValues = z.infer<typeof phoneCollectionSchema>;
 
-export default function CustomerLoginPage() {
+function CustomerLoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isSignUp, setIsSignUp] = useState(false);
@@ -455,5 +457,19 @@ export default function CustomerLoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+import { Suspense } from 'react';
+
+export default function CustomerLoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#faf9f6]/30 flex items-center justify-center p-6">
+        <Loader2 className="animate-spin text-amber-500" size={32} />
+      </div>
+    }>
+      <CustomerLoginForm />
+    </Suspense>
   );
 }
