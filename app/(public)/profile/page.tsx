@@ -46,10 +46,14 @@ function ProfileContent() {
 
       setLoadingVehicles(true);
       try {
-        const { data } = await supabase
+        const { data, error } = await supabase
           .from('vehicles')
           .select('*')
           .in('id', wishlistItems);
+
+        if (error) {
+          console.error('Error loading wishlist vehicles query:', error);
+        }
 
         if (data) {
           setVehicles(data);
