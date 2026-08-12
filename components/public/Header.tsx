@@ -2,16 +2,36 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X, Search, Phone } from 'lucide-react';
+import { Menu, X, Search, Phone, User } from 'lucide-react';
 import { NAV_LINKS, WHATSAPP_NUMBER } from '@/lib/constants';
 import { getDefaultWhatsAppMessage, getWhatsAppUrl } from '@/lib/utils';
+import { createClient } from '@/lib/supabase/client';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const router = useRouter();
   const pathname = usePathname();
+  const [user, setUser] = useState<any>(null);
+  const supabase = createClient();
   const isHomePage = pathname === '/';
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+    };
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -113,13 +133,36 @@ export default function Header() {
                 +91 78408 15818
               </a>
 
-              {/* Login CTA */}
-              <Link
-                href="/login"
-                className="hidden lg:inline-flex items-center justify-center bg-[#171717] hover:bg-neutral-800 text-white font-bold px-6 py-2.5 rounded-lg text-xs tracking-wider transition-all duration-200"
-              >
-                Login / Sign Up
-              </Link>
+              {/* Login / Profile CTA */}
+              {user ? (
+                <div className="relative group hidden lg:block">
+                  <button className="flex items-center gap-2 bg-[#171717] hover:bg-neutral-800 text-white font-bold px-5 py-2.5 rounded-lg text-xs tracking-wider transition-all duration-200 cursor-pointer">
+                    <User size={13} />
+                    {user.user_metadata?.full_name || user.email?.split('@')[0].toUpperCase()}
+                  </button>
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg py-2 hidden group-hover:block animate-fade-in-scale">
+                    <Link href="/profile" className="block px-4 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 hover:text-amber-500 transition-colors">MY PROFILE</Link>
+                    <Link href="/profile?tab=wishlist" className="block px-4 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 hover:text-amber-500 transition-colors">MY WISHLIST</Link>
+                    <button
+                      onClick={async () => {
+                        await supabase.auth.signOut();
+                        router.push('/');
+                        router.refresh();
+                      }}
+                      className="w-full text-left block px-4 py-2 text-xs font-semibold text-neutral-700 hover:bg-neutral-50 hover:text-amber-500 transition-colors cursor-pointer"
+                    >
+                      LOG OUT
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="hidden lg:inline-flex items-center justify-center bg-[#171717] hover:bg-neutral-800 text-white font-bold px-6 py-2.5 rounded-lg text-xs tracking-wider transition-all duration-200"
+                >
+                  Login / Sign Up
+                </Link>
+              )}
 
               {/* Mobile Menu Toggle */}
               <button
@@ -174,6 +217,27 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          {user ? (
+            <>
+              <Link href="/profile" className="px-4 py-3 text-sm font-semibold tracking-widest uppercase text-neutral-500 hover:text-neutral-950 transition-colors">
+                My Profile
+              </Link>
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  router.push('/');
+                  router.refresh();
+                }}
+                className="px-4 py-3 text-sm font-semibold tracking-widest uppercase text-neutral-500 hover:text-neutral-950 transition-colors text-left w-full cursor-pointer"
+              >
+                Log Out
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="px-4 py-3 text-sm font-semibold tracking-widest uppercase text-neutral-500 hover:text-neutral-950 transition-colors">
+              Login / Sign Up
+            </Link>
+          )}
         </nav>
 
         <div className="p-6 border-t border-neutral-200/60 mt-auto space-y-3">

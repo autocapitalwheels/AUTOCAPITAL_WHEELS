@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useWishlist } from '@/lib/hooks/useWishlist';
 import { SlidersHorizontal, LayoutGrid, List, X, ChevronDown, Search } from 'lucide-react';
 import VehicleCard from './VehicleCard';
 import type { Vehicle, VehicleSortOption } from '@/types';
@@ -62,6 +63,8 @@ export default function InventoryClient() {
     max_year: searchParams.get('max_year') || '',
     availability: searchParams.get('availability') || '',
   }));
+
+  const { isWishlisted, toggleWishlist } = useWishlist();
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
@@ -393,7 +396,13 @@ export default function InventoryClient() {
               <>
                 <div className={`grid gap-5 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
                   {vehicles.map((vehicle) => (
-                    <VehicleCard key={vehicle.id} vehicle={vehicle} variant={viewMode} />
+                    <VehicleCard
+                      key={vehicle.id}
+                      vehicle={vehicle}
+                      variant={viewMode}
+                      isWishlisted={isWishlisted(vehicle.id)}
+                      onWishlistToggle={toggleWishlist}
+                    />
                   ))}
                 </div>
 
