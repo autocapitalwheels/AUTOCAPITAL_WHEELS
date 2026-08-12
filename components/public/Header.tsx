@@ -56,11 +56,11 @@ export default function Header() {
 
   const headerBg = isHomePage
     ? isScrolled
-      ? 'bg-white/95 backdrop-blur-md border-b border-neutral-200/50 shadow-sm'
+      ? 'bg-[#0a0a0c]/90 backdrop-blur-md border-b border-neutral-800/80 shadow-md'
       : 'bg-transparent'
-    : 'bg-white border-b border-neutral-200/60';
+    : 'bg-[#0a0a0c]/95 border-b border-neutral-800/80';
 
-  const isDarkHeader = isHomePage && !isScrolled;
+  const isDarkHeader = true;
 
   const textColor = isDarkHeader
     ? 'text-white/80 hover:text-white'

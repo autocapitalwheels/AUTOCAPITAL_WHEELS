@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Loader2, Eye, EyeOff, Shield, ArrowLeft, Smartphone, CheckCircle, Mail, User } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Shield, ArrowLeft, Smartphone, CheckCircle, Mail, User, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { createBrowserClient } from '@supabase/ssr';
 
@@ -346,12 +346,13 @@ function CustomerLoginForm() {
                   <div>
                     <label htmlFor="cust-login-password" className="form-label">Password</label>
                     <div className="relative">
+                      <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
                       <input
                         id="cust-login-password"
                         type={showPass ? 'text' : 'password'}
                         placeholder="••••••••"
                         className={`form-input ${loginErrors.password ? 'error' : ''}`}
-                        style={{ paddingRight: '2.5rem' }}
+                        style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
                         {...regLogin('password')}
                       />
                       <button
@@ -427,12 +428,13 @@ function CustomerLoginForm() {
                   <div>
                     <label htmlFor="cust-reg-password" className="form-label">Password *</label>
                     <div className="relative">
+                      <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
                       <input
                         id="cust-reg-password"
                         type={showPass ? 'text' : 'password'}
                         placeholder="••••••••"
                         className={`form-input ${signupErrors.password ? 'error' : ''}`}
-                        style={{ paddingRight: '2.5rem' }}
+                        style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
                         {...regSignup('password')}
                       />
                       <button

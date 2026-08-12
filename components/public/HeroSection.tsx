@@ -92,7 +92,7 @@ export default function HeroSection() {
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.12]">
               Trusted Cars.
               <br />
-              <span className="text-amber-400">Trusted Deals.</span>
+              <span style={{ color: '#b48d36' }}>Trusted Deals.</span>
             </h1>
             
             <p className="text-neutral-300 text-sm sm:text-base max-w-md font-light leading-relaxed">
@@ -103,7 +103,7 @@ export default function HeroSection() {
           {/* Horizontal Trust Badges */}
           <div className="grid grid-cols-3 gap-4 border-t border-white/10 pt-6 max-w-md">
             <div className="flex flex-col gap-1 items-start">
-              <div className="text-amber-400 flex-shrink-0">
+              <div style={{ color: '#b48d36' }} className="flex-shrink-0">
                 <ShieldCheck size={20} className="stroke-[2]" />
               </div>
               <div>
@@ -113,7 +113,7 @@ export default function HeroSection() {
             </div>
 
             <div className="flex flex-col gap-1 items-start">
-              <div className="text-amber-400 flex-shrink-0">
+              <div style={{ color: '#b48d36' }} className="flex-shrink-0">
                 <Tag size={20} className="stroke-[2]" />
               </div>
               <div>
@@ -123,7 +123,7 @@ export default function HeroSection() {
             </div>
 
             <div className="flex flex-col gap-1 items-start">
-              <div className="text-amber-400 flex-shrink-0">
+              <div style={{ color: '#b48d36' }} className="flex-shrink-0">
                 <Headphones size={20} className="stroke-[2]" />
               </div>
               <div>
