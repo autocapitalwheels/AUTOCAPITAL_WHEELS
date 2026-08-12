@@ -334,7 +334,7 @@ function CustomerLoginForm() {
               )}
 
               {/* Form implementation */}
-              {!isSignUp ? (
+              <div className={isSignUp ? 'hidden' : ''}>
                 /* Login Form */
                 <form onSubmit={handleLoginSubmit(onLogin)} className="space-y-4">
                   <div>
@@ -344,6 +344,7 @@ function CustomerLoginForm() {
                       <input
                         id="cust-login-email"
                         type="email"
+                        autoComplete="username email"
                         placeholder="your@email.com"
                         className={`form-input ${loginErrors.email ? 'error' : ''}`}
                         style={{ paddingLeft: '2.5rem' }}
@@ -360,6 +361,7 @@ function CustomerLoginForm() {
                       <input
                         id="cust-login-password"
                         type={showPass ? 'text' : 'password'}
+                        autoComplete="current-password"
                         placeholder="••••••••"
                         className={`form-input ${loginErrors.password ? 'error' : ''}`}
                         style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
@@ -384,7 +386,9 @@ function CustomerLoginForm() {
                     {loading ? <Loader2 size={16} className="animate-spin" /> : 'LOG IN'}
                   </button>
                 </form>
-              ) : (
+              </div>
+
+              <div className={!isSignUp ? 'hidden' : ''}>
                 /* Signup Form */
                 <form onSubmit={handleSignupSubmit(onSignup)} className="space-y-4">
                   <div>
@@ -394,6 +398,7 @@ function CustomerLoginForm() {
                       <input
                         id="cust-reg-name"
                         type="text"
+                        autoComplete="name"
                         placeholder="Your full name"
                         className={`form-input ${signupErrors.name ? 'error' : ''}`}
                         style={{ paddingLeft: '2.5rem' }}
@@ -410,6 +415,7 @@ function CustomerLoginForm() {
                       <input
                         id="cust-reg-email"
                         type="email"
+                        autoComplete="email"
                         placeholder="your@email.com"
                         className={`form-input ${signupErrors.email ? 'error' : ''}`}
                         style={{ paddingLeft: '2.5rem' }}
@@ -426,6 +432,7 @@ function CustomerLoginForm() {
                       <input
                         id="cust-reg-phone"
                         type="tel"
+                        autoComplete="tel"
                         placeholder="10-digit number"
                         maxLength={10}
                         className={`form-input rounded-l-none ${signupErrors.phone ? 'error' : ''}`}
@@ -442,6 +449,7 @@ function CustomerLoginForm() {
                       <input
                         id="cust-reg-password"
                         type={showPass ? 'text' : 'password'}
+                        autoComplete="new-password"
                         placeholder="••••••••"
                         className={`form-input ${signupErrors.password ? 'error' : ''}`}
                         style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}
@@ -466,7 +474,7 @@ function CustomerLoginForm() {
                     {loading ? <Loader2 size={16} className="animate-spin" /> : 'CREATE ACCOUNT'}
                   </button>
                 </form>
-              )}
+              </div>
 
               {/* Social Login Divider */}
               <div className="relative my-6 text-center">
