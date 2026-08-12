@@ -54,25 +54,15 @@ export default function Header() {
     return () => { document.body.style.overflow = ''; };
   }, [isMenuOpen]);
 
-  const headerBg = isHomePage
-    ? isScrolled
-      ? 'bg-[#0a0a0c] border-b border-neutral-800/80 shadow-md'
-      : 'bg-transparent'
-    : 'bg-[#0a0a0c] border-b border-neutral-800/80';
+  const headerBg = 'bg-[#0a0a0c] border-b border-neutral-800/80 shadow-md';
 
   const isDarkHeader = true;
 
-  const textColor = isDarkHeader
-    ? 'text-white/80 hover:text-white'
-    : 'text-neutral-600 hover:text-neutral-950';
+  const textColor = 'text-white/80 hover:text-white';
 
-  const contactColor = isDarkHeader
-    ? 'text-white/95 hover:text-white'
-    : 'text-neutral-800 hover:text-neutral-950';
+  const contactColor = 'text-white/95 hover:text-white';
 
-  const burgerColor = isDarkHeader
-    ? 'text-white hover:bg-white/10'
-    : 'text-neutral-800 hover:bg-neutral-100';
+  const burgerColor = 'text-white hover:bg-white/10';
 
   return (
     <>
