@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
         source: 'website',
         ip_address: ip,
         user_agent: request.headers.get('user-agent') || undefined,
+        user_id: data.user_id || null,
       })
       .select('enquiry_id, id')
       .single();

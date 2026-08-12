@@ -13,6 +13,7 @@ export const enquirySchema = z.object({
   preferred_contact: z.enum(['Phone', 'WhatsApp', 'Email', 'Any']).default('Phone'),
   preferred_time: z.string().optional(),
   test_drive_requested: z.boolean().default(false),
+  user_id: z.string().uuid().optional(),
 });
 
 export type EnquiryFormValues = z.infer<typeof enquirySchema>;

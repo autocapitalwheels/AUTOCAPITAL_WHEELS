@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { X, Loader2, CheckCircle, MessageCircle } from 'lucide-react';
+import { X, Loader2, CheckCircle2, MessageCircle, Clock, MapPin, Sparkles } from 'lucide-react';
 import { Vehicle } from '@/types';
 import { enquirySchema, EnquiryFormValues } from '@/lib/validations';
 import { formatPrice, getVehicleTitle, getWhatsAppUrl, getVehicleWhatsAppMessage } from '@/lib/utils';
-import { WHATSAPP_NUMBER, PREFERRED_TIMES } from '@/lib/constants';
+import { WHATSAPP_NUMBER } from '@/lib/constants';
+import { createClient } from '@/lib/supabase/client';
 
 interface EnquiryModalProps {
   vehicle?: Vehicle;
@@ -20,6 +21,8 @@ type FormState = 'idle' | 'loading' | 'success' | 'error';
 export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry' }: EnquiryModalProps) {
   const [formState, setFormState] = useState<FormState>('idle');
   const [enquiryId, setEnquiryId] = useState('');
+  const supabase = createClient();
+  const [userId, setUserId] = useState<string | null>(null);
   
   // Dynamic vehicle list states
   const [availableVehicles, setAvailableVehicles] = useState<Vehicle[]>([]);
@@ -41,8 +44,19 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
   });
   const errors = formErrorsState.errors as any;
 
-  // Load available vehicles if no specific vehicle is pre-selected
+  // Load user data and available vehicles
   useEffect(() => {
+    const loadUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserId(session.user.id);
+        setValue('customer_name', session.user.user_metadata?.full_name || '');
+        setValue('customer_phone', session.user.user_metadata?.phone || '');
+        setValue('customer_email', session.user.email || '');
+      }
+    };
+    loadUser();
+
     if (!vehicle) {
       setLoadingStock(true);
       fetch('/api/vehicles?per_page=50')
@@ -55,7 +69,7 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
         .catch((err) => console.error('Error loading quote stock:', err))
         .finally(() => setLoadingStock(false));
     }
-  }, [vehicle]);
+  }, [vehicle, setValue]);
 
   const handleVehicleChange = (vehicleId: string) => {
     const found = availableVehicles.find((v) => v.id === vehicleId) || null;
@@ -83,10 +97,11 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
   const onSubmit = async (data: EnquiryFormValues) => {
     setFormState('loading');
     try {
+      const payload = { ...data, user_id: userId };
       const res = await fetch('/api/enquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
       if (json.success) {
@@ -101,81 +116,73 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
   };
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="enquiry-modal-title">
-      <div className="modal-content animate-fade-in-scale" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+      <div className="relative w-full max-w-lg bg-[#121215] border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden animate-fade-in-scale">
+        
         {/* Header */}
-        <div className="flex items-start justify-between p-6 border-b border-neutral-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
           <div>
-            <h2 id="enquiry-modal-title" className="font-display font-bold text-lg text-neutral-900">
-              {defaultType === 'test_drive' ? 'Request Test Drive' : 'Get Quotation'}
-            </h2>
-            <p className="text-sm text-neutral-500 mt-0.5">{title}</p>
+            <h2 className="font-display font-bold text-base text-white uppercase tracking-wider">Get Quotation</h2>
+            <p className="text-[10px] text-neutral-400 font-light uppercase tracking-wider mt-0.5">{title}</p>
             {selectedVehicle && selectedVehicle.price && (
-              <p className="text-sm font-semibold text-neutral-900 mt-0.5">{formatPrice(selectedVehicle.price)}</p>
+              <p className="text-xs font-bold text-[#b48d36] mt-0.5">{formatPrice(selectedVehicle.price)}</p>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-md text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors"
-            aria-label="Close"
-          >
+          <button onClick={onClose} className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-all cursor-pointer">
             <X size={18} />
           </button>
         </div>
 
         {/* Success State */}
-        {formState === 'success' && (
-          <div className="p-8 text-center">
-            <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="text-green-600" size={28} />
+        {formState === 'success' ? (
+          <div className="p-8 text-center space-y-4">
+            <div className="flex justify-center">
+              <CheckCircle2 size={48} className="text-[#b48d36] animate-bounce" />
             </div>
-            <h3 className="font-display font-bold text-lg text-neutral-900 mb-2">Enquiry Submitted!</h3>
-            <p className="text-sm text-neutral-500 mb-1">
-              Our team will contact you within 24 hours.
+            <h3 className="font-display font-bold text-lg text-white uppercase tracking-wider">Request Submitted!</h3>
+            <p className="text-xs text-neutral-400 max-w-sm mx-auto leading-relaxed">
+              We have received your quotation request. One of our luxury consultants will prepare a custom proposal and reach out to you shortly. You can track this request status in your profile page.
             </p>
             {enquiryId && (
-              <p className="text-xs text-neutral-400 mb-6">
-                Reference ID: <span className="font-mono font-medium text-neutral-700">{enquiryId}</span>
+              <p className="text-[10px] text-neutral-500">
+                Reference ID: <span className="font-mono font-semibold text-neutral-300">#{enquiryId}</span>
               </p>
             )}
-            <div className="space-y-3">
+            <div className="space-y-3 pt-2">
               <a
                 href={getWhatsAppUrl(WHATSAPP_NUMBER, getVehicleWhatsAppMessage(title))}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-[#25d366] text-white font-semibold py-3 rounded-md text-sm hover:bg-[#128C7E] transition-colors"
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#25d366] hover:bg-[#128C7E] text-white font-bold py-3.5 rounded-lg text-xs uppercase tracking-wider transition-all"
               >
                 <MessageCircle size={16} />
                 Chat on WhatsApp Instead
               </a>
               <button
                 onClick={onClose}
-                className="w-full border border-neutral-300 text-neutral-700 font-semibold py-3 rounded-md text-sm hover:bg-neutral-50 transition-colors"
+                className="w-full border border-neutral-800 hover:bg-neutral-900 text-white font-bold py-3 rounded-lg text-xs uppercase tracking-wider transition-all cursor-pointer"
               >
                 Close
               </button>
             </div>
           </div>
-        )}
-
-        {/* Form */}
-        {formState !== 'success' && (
+        ) : (
+          /* Form content */
           <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
             <input type="hidden" {...register('vehicle_id')} />
 
             {/* Vehicle Selector Dropdown if no vehicle passed */}
             {!vehicle && (
               <div>
-                <label htmlFor="enq-vehicle-select" className="form-label">Select Car of Interest *</label>
+                <label className="block text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">Select Car of Interest *</label>
                 {loadingStock ? (
-                  <div className="flex items-center gap-2 text-xs text-neutral-400 py-2.5">
-                    <Loader2 className="animate-spin text-amber-500" size={14} />
+                  <div className="flex items-center gap-2 text-xs text-neutral-500 py-2">
+                    <Loader2 className="animate-spin text-[#b48d36]" size={14} />
                     Loading available stock...
                   </div>
                 ) : (
                   <select
-                    id="enq-vehicle-select"
-                    className={`form-input text-xs font-semibold ${errors.vehicle_id ? 'error' : ''}`}
+                    className="w-full text-xs font-semibold px-4 py-3 bg-[#16161a] border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500 text-white cursor-pointer appearance-none"
                     onChange={(e) => handleVehicleChange(e.target.value)}
                     value={selectedVehicle?.id || ''}
                     required
@@ -188,156 +195,122 @@ export default function EnquiryModal({ vehicle, onClose, defaultType = 'enquiry'
                     ))}
                   </select>
                 )}
-                {errors.vehicle_id && <p className="form-error">{errors.vehicle_id.message}</p>}
+                {errors.vehicle_id && <p className="text-red-500 text-[10px] mt-1">{errors.vehicle_id.message}</p>}
               </div>
             )}
 
-            {/* Name */}
-            <div>
-              <label htmlFor="enq-name" className="form-label">Full Name *</label>
-              <input
-                id="enq-name"
-                type="text"
-                placeholder="Your full name"
-                className={`form-input ${errors.customer_name ? 'error' : ''}`}
-                autoComplete="name"
-                {...register('customer_name')}
-              />
-              {errors.customer_name && <p className="form-error">{errors.customer_name.message}</p>}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">Full Name *</label>
+                <input
+                  type="text"
+                  placeholder="Your full name"
+                  className="w-full text-xs font-semibold px-4 py-3 bg-[#16161a] border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500 text-white"
+                  {...register('customer_name')}
+                />
+                {errors.customer_name && <p className="text-red-500 text-[10px] mt-1">{errors.customer_name.message}</p>}
+              </div>
+
+              <div>
+                <label className="block text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">Phone Number *</label>
+                <div className="relative flex">
+                  <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-neutral-800 bg-[#16161a] text-xs text-neutral-500 font-semibold">+91</span>
+                  <input
+                    type="tel"
+                    placeholder="10-digit number"
+                    className="w-full text-xs font-semibold px-4 py-3 bg-[#16161a] border border-neutral-800 rounded-r-lg focus:outline-none focus:border-amber-500 text-white"
+                    maxLength={10}
+                    {...register('customer_phone')}
+                  />
+                </div>
+                {errors.customer_phone && <p className="text-red-500 text-[10px] mt-1">{errors.customer_phone.message}</p>}
+              </div>
             </div>
 
-            {/* Phone */}
-            <div>
-              <label htmlFor="enq-phone" className="form-label">Mobile Number *</label>
-              <div className="flex">
-                <span className="flex items-center px-3 bg-neutral-50 border border-r-0 border-neutral-200 rounded-l-md text-sm text-neutral-500 font-medium">+91</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">Email Address</label>
                 <input
-                  id="enq-phone"
-                  type="tel"
-                  placeholder="10-digit mobile number"
-                  className={`form-input rounded-l-none flex-1 ${errors.customer_phone ? 'error' : ''}`}
-                  maxLength={10}
-                  autoComplete="tel"
-                  {...register('customer_phone')}
+                  type="email"
+                  placeholder="your@email.com"
+                  className="w-full text-xs font-semibold px-4 py-3 bg-[#16161a] border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500 text-white"
+                  {...register('customer_email')}
                 />
               </div>
-              {errors.customer_phone && <p className="form-error">{errors.customer_phone.message}</p>}
+
+              <div>
+                <label className="block text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">City (optional)</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Your city"
+                    className="w-full text-xs font-semibold px-4 py-3 bg-[#16161a] border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500 pl-10 text-white"
+                    {...register('customer_city')}
+                  />
+                  <MapPin size={14} className="absolute left-3.5 top-3.5 text-neutral-500" />
+                </div>
+              </div>
             </div>
 
-            {/* Email */}
             <div>
-              <label htmlFor="enq-email" className="form-label">Email <span className="text-neutral-400 font-normal">(optional)</span></label>
-              <input
-                id="enq-email"
-                type="email"
-                placeholder="your@email.com"
-                className="form-input"
-                autoComplete="email"
-                {...register('customer_email')}
-              />
-            </div>
-
-            {/* City */}
-            <div>
-              <label htmlFor="enq-city" className="form-label">City <span className="text-neutral-400 font-normal">(optional)</span></label>
-              <input
-                id="enq-city"
-                type="text"
-                placeholder="Your city"
-                className="form-input"
-                {...register('customer_city')}
-              />
-            </div>
-
-            {/* Message */}
-            <div>
-              <label htmlFor="enq-message" className="form-label">Message <span className="text-neutral-400 font-normal">(optional)</span></label>
+              <label className="block text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">Message / Requirements</label>
               <textarea
-                id="enq-message"
-                rows={3}
-                placeholder="Any specific questions or requirements..."
-                className="form-input resize-none"
+                rows={2}
+                placeholder="Questions about registration state, loan requirements..."
+                className="w-full text-xs font-semibold px-4 py-3 bg-[#16161a] border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500 text-white resize-none"
                 {...register('message')}
               />
             </div>
 
-            {/* Preferred Contact */}
-            <div>
-              <label className="form-label">Preferred Contact Method</label>
-              <div className="flex gap-2 flex-wrap">
-                {(['Phone', 'WhatsApp', 'Email', 'Any'] as const).map((method) => (
-                  <label key={method} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      value={method}
-                      className="sr-only"
-                      {...register('preferred_contact')}
-                      id={`contact-${method}`}
-                    />
-                    <span
-                      className="px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all has-[:checked]:bg-neutral-900 has-[:checked]:text-white has-[:checked]:border-neutral-900"
-                      onClick={() => setValue('preferred_contact', method)}
-                    >
-                      {method}
-                    </span>
-                  </label>
-                ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">Preferred Contact Method</label>
+                <select
+                  className="w-full text-xs font-semibold px-4 py-3 bg-[#16161a] border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500 text-white cursor-pointer appearance-none"
+                  {...register('preferred_contact')}
+                >
+                  <option value="Phone">Phone Call</option>
+                  <option value="WhatsApp">WhatsApp Message</option>
+                  <option value="Email">Email</option>
+                  <option value="Any">Any Method</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[9px] font-bold text-neutral-400 uppercase tracking-widest mb-1.5">Preferred Time slot</label>
+                <select
+                  className="w-full text-xs font-semibold px-4 py-3 bg-[#16161a] border border-neutral-800 rounded-lg focus:outline-none focus:border-amber-500 text-white cursor-pointer appearance-none"
+                  {...register('preferred_time')}
+                >
+                  <option value="">Any time</option>
+                  <option value="Morning (10 AM - 1 PM)">Morning (10 AM - 1 PM)</option>
+                  <option value="Afternoon (1 PM - 4 PM)">Afternoon (1 PM - 4 PM)</option>
+                  <option value="Evening (4 PM - 7 PM)">Evening (4 PM - 7 PM)</option>
+                </select>
               </div>
             </div>
 
-            {/* Preferred Time */}
-            <div>
-              <label htmlFor="enq-time" className="form-label">Preferred Time <span className="text-neutral-400 font-normal">(optional)</span></label>
-              <select id="enq-time" className="form-input" {...register('preferred_time')}>
-                <option value="">Any time</option>
-                {PREFERRED_TIMES.map((time) => (
-                  <option key={time} value={time}>{time}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Test Drive toggle */}
-            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-md border border-neutral-200 hover:bg-neutral-50 transition-colors">
-              <input type="checkbox" className="w-4 h-4 accent-neutral-900" {...register('test_drive_requested')} />
-              <span className="text-sm font-medium text-neutral-700">I'd also like to request a test drive</span>
-            </label>
-
             {formState === 'error' && (
-              <p className="text-sm text-red-600 bg-red-50 px-4 py-3 rounded-md">
-                Something went wrong. Please try again or WhatsApp us directly.
+              <p className="text-[10px] text-red-400 bg-red-950/50 border border-red-900 px-4 py-3 rounded-lg text-center">
+                Something went wrong. Please try again or click WhatsApp.
               </p>
             )}
 
-            <div className="flex gap-3 pt-2">
-              <button
-                type="submit"
-                disabled={formState === 'loading'}
-                className="flex-1 btn-primary py-3 justify-center"
-                id="submit-enquiry-btn"
-              >
-                {formState === 'loading' ? (
-                  <>
-                    <Loader2 size={16} className="animate-spin" />
-                    Submitting...
-                  </>
-                ) : (
-                  'Submit Enquiry'
-                )}
-              </button>
-              <a
-                href={getWhatsAppUrl(WHATSAPP_NUMBER, getVehicleWhatsAppMessage(title))}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-whatsapp py-3 px-4"
-                aria-label="WhatsApp"
-              >
-                <MessageCircle size={18} />
-              </a>
-            </div>
-
-            <p className="text-xs text-neutral-400 text-center">
-              By submitting you agree to be contacted by our team regarding this vehicle.
-            </p>
+            <button
+              type="submit"
+              disabled={formState === 'loading'}
+              className="w-full inline-flex items-center justify-center gap-2 bg-[#b48d36] hover:bg-[#9a845a] text-white font-bold py-4 rounded-lg text-xs uppercase tracking-wider transition-all cursor-pointer"
+              id="submit-enquiry-btn"
+            >
+              {formState === 'loading' ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  SUBMITTING...
+                </>
+              ) : (
+                'SUBMIT QUOTATION REQUEST'
+              )}
+            </button>
           </form>
         )}
       </div>
