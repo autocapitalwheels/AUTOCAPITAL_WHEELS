@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { VehicleFilters, VehicleSortOption } from '@/types';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 function verifyAdminSession(request: NextRequest) {
   const sessionToken = request.cookies.get('acw_admin_session')?.value;
   return sessionToken || null;

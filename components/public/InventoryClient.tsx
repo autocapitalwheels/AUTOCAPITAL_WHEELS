@@ -146,7 +146,8 @@ export default function InventoryClient() {
             placeholder="Search make, model..."
             value={filters.search}
             onChange={(e) => updateFilter('search', e.target.value)}
-            className="form-input pl-9 text-sm"
+            className="form-input text-sm"
+            style={{ paddingLeft: '2.5rem' }}
             id="inventory-search"
           />
         </div>
