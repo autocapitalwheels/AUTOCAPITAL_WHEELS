@@ -64,6 +64,20 @@ export default function InventoryClient() {
     availability: searchParams.get('availability') || '',
   }));
 
+  const [availableMakes, setAvailableMakes] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch('/api/vehicles?per_page=100')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success && json.data) {
+          const uniqueMakes = Array.from(new Set(json.data.map((v: any) => v.make))).sort();
+          setAvailableMakes(uniqueMakes as string[]);
+        }
+      })
+      .catch((err) => console.error('Error fetching inventory makes:', err));
+  }, []);
+
   const { isWishlisted, toggleWishlist } = useWishlist();
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
@@ -130,11 +144,11 @@ export default function InventoryClient() {
         <select
           value={filters.make}
           onChange={(e) => updateFilter('make', e.target.value)}
-          className="form-input text-sm"
+          className="form-input text-sm cursor-pointer"
           id="filter-make"
         >
           <option value="">All Makes</option>
-          {CAR_MAKES.map((make) => <option key={make} value={make}>{make}</option>)}
+          {availableMakes.map((make) => <option key={make} value={make}>{make}</option>)}
         </select>
       </div>
 
