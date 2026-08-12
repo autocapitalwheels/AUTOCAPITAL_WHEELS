@@ -785,34 +785,73 @@ h1, h2, h3, h4, h5, h6 {
    PREMIUM DARK MODE THEME OVERRIDES (WHOLE SITE)
    ============================================================ */
 
-body {
+body, html, main {
   background-color: #0a0a0c !important;
   color: #f3f4f6 !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, strong, b, .font-bold, .font-extrabold, .font-semibold {
   color: #ffffff !important;
 }
 
-/* Background overrides */
-.bg-white, .bg-neutral-50, .bg-gray-50, .bg-neutral-100 {
+/* Force all sections and containers to be dark */
+section, header, footer, div, .container, .container-custom {
+  background-color: transparent;
+}
+
+/* Force all white and light backgrounds to dark grey card backgrounds */
+.bg-white, 
+.bg-neutral-50, 
+.bg-gray-50, 
+.bg-neutral-100, 
+.bg-gray-100,
+[class*="bg-[#faf9f6]"], 
+[class*="bg-[#faf9f6]/"], 
+[class*="bg-[#f7f6f2]"], 
+.bg-\[\#faf9f6\], 
+.bg-\[\#f7f6f2\], 
+.bg-\[\#faf9f6\]\/30, 
+.bg-\[\#faf9f6\]\/80 {
   background-color: #121215 !important;
 }
 
-.text-neutral-900, .text-neutral-800, .text-neutral-700, .text-gray-900, .text-gray-800 {
-  color: #f3f4f6 !important;
+/* Main content sections on homepage & subpages must be dark near-black */
+section[class*="bg-"], 
+.bg-white[class*="py-"], 
+section {
+  background-color: #0a0a0c !important;
 }
 
-.text-neutral-600, .text-neutral-500, .text-neutral-400, .text-gray-500 {
-  color: #9ca3af !important;
+/* Force text visibility */
+p, span, li, label, td, th {
+  color: #d1d5db !important; /* soft silver for excellent readability */
+}
+
+/* Keep brand gold text styling */
+.text-amber-500, 
+.text-amber-400, 
+.text-yellow-500, 
+.text-yellow-400,
+[style*="color: rgb(180, 141, 54)"], 
+[style*="color: #b48d36"] {
+  color: #b48d36 !important;
 }
 
 /* Border overrides */
-.border, .border-neutral-200, .border-neutral-200/80, .border-neutral-200/60, .border-neutral-200/50, .border-neutral-100, .border-gray-100, .border-gray-200 {
+.border, 
+.border-neutral-200, 
+.border-neutral-200\/80, 
+.border-neutral-200\/60, 
+.border-neutral-200\/50, 
+.border-neutral-100, 
+.border-gray-100, 
+.border-gray-200,
+.border-y,
+.border-b {
   border-color: #1f1f24 !important;
 }
 
-/* Form input styling overrides */
+/* Input boxes, textareas and selectors */
 .form-input, select, textarea, input[type="text"], input[type="email"], input[type="password"], input[type="tel"] {
   background-color: #16161a !important;
   border-color: #2e2e36 !important;
@@ -824,15 +863,17 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 0 3px rgba(180, 141, 54, 0.15) !important;
 }
 
-/* Custom cards and grids dark style */
-.bg-neutral-50, .bg-gray-50 {
+/* Table styling for dark theme */
+thead tr {
   background-color: #16161a !important;
+  border-bottom: 2px solid #1f1f24 !important;
 }
 
-.bg-neutral-100 {
-  background-color: #1c1c21 !important;
+tbody tr:hover {
+  background-color: #16161a/50 !important;
 }
 
+/* Shadows */
 .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
 }
