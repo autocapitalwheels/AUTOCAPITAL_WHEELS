@@ -172,6 +172,29 @@ export default function VehicleDetailClient({ vehicle, similarVehicles }: Vehicl
                   </div>
                 )}
                 <h1 className="font-display font-black text-2xl sm:text-3xl text-neutral-900 leading-tight">{title}</h1>
+                {/* Marketing tags */}
+                <div className="flex flex-wrap gap-1.5 mt-2.5">
+                  {vehicle.is_featured && (
+                    <span style={{ backgroundColor: '#b48d36' }} className="text-white text-[8px] font-bold px-2 py-0.5 rounded tracking-widest uppercase shadow-md shadow-amber-500/10">
+                      Featured
+                    </span>
+                  )}
+                  {vehicle.is_new_arrival && (
+                    <span className="bg-emerald-600 text-white text-[8px] font-bold px-2 py-0.5 rounded tracking-widest uppercase shadow-md shadow-emerald-500/10">
+                      New Arrival
+                    </span>
+                  )}
+                  {vehicle.is_hot_deal && (
+                    <span className="bg-red-600 text-white text-[8px] font-bold px-2 py-0.5 rounded tracking-widest uppercase shadow-md shadow-red-500/10">
+                      Hot Deal
+                    </span>
+                  )}
+                  {vehicle.is_price_drop && (
+                    <span className="bg-amber-600 text-white text-[8px] font-bold px-2 py-0.5 rounded tracking-widest uppercase shadow-md shadow-amber-500/10">
+                      Price Drop
+                    </span>
+                  )}
+                </div>
                 {vehicle.variant && (
                   <p className="text-neutral-500 mt-1">{vehicle.variant}</p>
                 )}

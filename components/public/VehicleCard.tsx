@@ -41,6 +41,24 @@ export default function VehicleCard({
               <span className="badge badge-sold text-xs">SOLD</span>
             </div>
           )}
+          {/* Marketing badges */}
+          <div className="absolute top-2 left-2 flex flex-col gap-0.5 z-10">
+            {vehicle.is_featured && (
+              <span style={{ backgroundColor: '#b48d36' }} className="text-white text-[7px] font-bold px-1.5 py-0.5 rounded tracking-widest uppercase shadow-md shadow-amber-500/10">
+                Featured
+              </span>
+            )}
+            {vehicle.is_new_arrival && (
+              <span className="bg-emerald-600 text-white text-[7px] font-bold px-1.5 py-0.5 rounded tracking-widest uppercase shadow-md shadow-emerald-500/10">
+                New Arrival
+              </span>
+            )}
+            {vehicle.is_hot_deal && (
+              <span className="bg-red-600 text-white text-[7px] font-bold px-1.5 py-0.5 rounded tracking-widest uppercase shadow-md shadow-red-500/10">
+                Hot Deal
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Content */}
@@ -110,10 +128,27 @@ export default function VehicleCard({
         )}
 
         {/* Marketing badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1">
-          {vehicle.is_featured && <span className="badge badge-featured">Featured</span>}
-          {vehicle.is_new_arrival && !vehicle.is_featured && <span className="badge badge-new">New</span>}
-          {vehicle.is_price_drop && <span className="badge badge-price-drop">Price Drop</span>}
+        <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+          {vehicle.is_featured && (
+            <span style={{ backgroundColor: '#b48d36' }} className="text-white text-[8px] font-bold px-2 py-0.5 rounded tracking-widest uppercase shadow-lg shadow-amber-500/10">
+              Featured
+            </span>
+          )}
+          {vehicle.is_new_arrival && (
+            <span className="bg-emerald-600 text-white text-[8px] font-bold px-2 py-0.5 rounded tracking-widest uppercase shadow-lg shadow-emerald-500/10">
+              New Arrival
+            </span>
+          )}
+          {vehicle.is_hot_deal && (
+            <span className="bg-red-600 text-white text-[8px] font-bold px-2 py-0.5 rounded tracking-widest uppercase shadow-lg shadow-red-500/10">
+              Hot Deal
+            </span>
+          )}
+          {vehicle.is_price_drop && (
+            <span className="bg-amber-600 text-white text-[8px] font-bold px-2 py-0.5 rounded tracking-widest uppercase shadow-lg shadow-amber-500/10">
+              Price Drop
+            </span>
+          )}
         </div>
       </div>
 
