@@ -48,7 +48,7 @@ export default function HeroSection() {
   }, [slides]);
 
   return (
-    <section className="relative pt-32 pb-24 lg:pt-44 lg:pb-36 overflow-hidden min-h-[90vh] flex items-center bg-white">
+    <section className="relative pt-24 pb-12 lg:pt-44 lg:pb-36 overflow-hidden min-h-[70vh] lg:min-h-[90vh] flex items-center bg-white">
       {/* Full section background image slideshow */}
       {slides.map((slide, index) => {
         const isVideo = slide.endsWith('.mp4') || slide.endsWith('.webm') || slide.includes('/hero/hero_slide_') && !slide.includes('.png') && !slide.includes('.jpg');
@@ -80,14 +80,14 @@ export default function HeroSection() {
         );
       })}
       
-      {/* Light gradient overlay on the left to ensure high text readability */}
-      <div className="absolute inset-y-0 left-0 w-full lg:w-[55%] bg-gradient-to-r from-white via-white/95 to-white/10 pointer-events-none z-10" />
+      {/* Light gradient overlay on the left/bottom to ensure high text readability */}
+      <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent lg:bg-gradient-to-r lg:from-white lg:via-white/95 lg:to-white/10 pointer-events-none z-10" />
 
       <div className="container-custom relative z-20 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           {/* Left Text Content */}
-          <div className="lg:col-span-6 space-y-8 animate-slide-up">
+          <div className="lg:col-span-6 space-y-6 lg:space-y-8 animate-slide-up">
             <div className="space-y-4">
               <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-900 leading-[1.15]">
                 Trusted Cars.
