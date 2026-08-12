@@ -4,36 +4,81 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Headphones, ShieldCheck, Tag } from 'lucide-react';
 
-const BACKGROUND_SLIDES = [
+const DEFAULT_SLIDES = [
   '/hero_full_background.png',
   '/hero_full_background_2.png',
   '/hero_full_background_3.png',
 ];
 
+import { createClient } from '@/lib/supabase/client';
+
 export default function HeroSection() {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [slides, setSlides] = useState<string[]>(DEFAULT_SLIDES);
+  const supabase = createClient();
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % BACKGROUND_SLIDES.length);
-    }, 5000);
-    return () => clearInterval(interval);
+    const loadSlides = async () => {
+      try {
+        const { data } = await supabase
+          .from('site_settings')
+          .select('value')
+          .eq('key', 'hero_slides')
+          .single();
+        
+        if (data?.value) {
+          const parsed = JSON.parse(data.value);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setSlides(parsed);
+          }
+        }
+      } catch {
+        // Fallback to defaults
+      }
+    };
+    loadSlides();
   }, []);
+
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [slides]);
 
   return (
     <section className="relative pt-32 pb-24 lg:pt-44 lg:pb-36 overflow-hidden min-h-[90vh] flex items-center bg-white">
       {/* Full section background image slideshow */}
-      {BACKGROUND_SLIDES.map((slide, index) => (
-        <div 
-          key={slide}
-          className={`absolute inset-0 bg-cover bg-right md:bg-center pointer-events-none transition-opacity duration-1000 ease-in-out ${
-            index === activeSlide ? 'opacity-100 z-0' : 'opacity-0 z-0'
-          }`}
-          style={{
-            backgroundImage: `url('${slide}')`,
-          }}
-        />
-      ))}
+      {slides.map((slide, index) => {
+        const isVideo = slide.endsWith('.mp4') || slide.endsWith('.webm') || slide.includes('/hero/hero_slide_') && !slide.includes('.png') && !slide.includes('.jpg');
+        return (
+          <div 
+            key={slide}
+            className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ease-in-out ${
+              index === activeSlide ? 'opacity-100 z-0' : 'opacity-0 z-0'
+            }`}
+          >
+            {isVideo ? (
+              <video
+                src={slide}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              <div
+                className="w-full h-full bg-cover bg-right md:bg-center"
+                style={{
+                  backgroundImage: `url('${slide}')`,
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
       
       {/* Light gradient overlay on the left to ensure high text readability */}
       <div className="absolute inset-y-0 left-0 w-full lg:w-[55%] bg-gradient-to-r from-white via-white/95 to-white/10 pointer-events-none z-10" />

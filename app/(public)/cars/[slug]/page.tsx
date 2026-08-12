@@ -3,11 +3,22 @@ import type { Metadata } from 'next';
 import { createAdminClient } from '@/lib/supabase/admin';
 import VehicleDetailClient from '@/components/public/VehicleDetailClient';
 import type { Vehicle } from '@/types';
-
 import { MOCK_VEHICLES } from '@/lib/supabase/mock-data';
+
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  try {
+    const supabase = createAdminClient();
+    const { data } = await supabase.from('vehicles').select('slug');
+    return (data || []).map((v) => ({ slug: v.slug }));
+  } catch {
+    return MOCK_VEHICLES.map((v) => ({ slug: v.slug }));
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

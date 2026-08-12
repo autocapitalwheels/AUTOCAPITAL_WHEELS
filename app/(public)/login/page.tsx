@@ -71,6 +71,18 @@ function CustomerLoginForm() {
         const user = session.user;
         const phone = user.user_metadata?.phone || user.phone;
         
+        if (user.email?.toLowerCase() === 'autocapitalwheels@gmail.com') {
+          await fetch('/api/admin/auth-sync', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session.access_token}`,
+            },
+          });
+          router.push('/admin/dashboard');
+          router.refresh();
+          return;
+        }
+
         if (!phone) {
           setNeedsPhone(true);
           setTempUser(user);
@@ -96,6 +108,20 @@ function CustomerLoginForm() {
       if (authError) {
         setError(authError.message);
       } else if (authData.user) {
+        const session = (await supabase.auth.getSession()).data.session;
+        
+        if (authData.user.email?.toLowerCase() === 'autocapitalwheels@gmail.com') {
+          await fetch('/api/admin/auth-sync', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${session?.access_token}`,
+            },
+          });
+          router.push('/admin/dashboard');
+          router.refresh();
+          return;
+        }
+
         const phone = authData.user.user_metadata?.phone || authData.user.phone;
         if (!phone) {
           setNeedsPhone(true);

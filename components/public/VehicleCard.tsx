@@ -76,15 +76,15 @@ export default function VehicleCard({
   }
 
   return (
-    <div className={`vehicle-card group relative bg-white flex flex-col justify-between ${isSold ? 'opacity-85' : ''}`}>
+    <div className={`vehicle-card group relative bg-white flex flex-col justify-between rounded-2xl overflow-hidden border border-neutral-200/60 shadow-sm hover:shadow-md hover:-translate-y-1.5 transition-all duration-300 ${isSold ? 'opacity-85' : ''}`}>
       {/* Image */}
-      <div className="vehicle-card-image h-48 relative">
+      <div className="vehicle-card-image h-48 relative overflow-hidden">
         <Image
           src={imageUrl}
           alt={title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           loading="lazy"
         />
 
