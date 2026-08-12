@@ -177,7 +177,7 @@ function CustomerLoginForm() {
       await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/login`,
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
     } catch {
@@ -335,7 +335,8 @@ function CustomerLoginForm() {
                         id="cust-login-email"
                         type="email"
                         placeholder="your@email.com"
-                        className={`form-input pl-10 ${loginErrors.email ? 'error' : ''}`}
+                        className={`form-input ${loginErrors.email ? 'error' : ''}`}
+                        style={{ paddingLeft: '2.5rem' }}
                         {...regLogin('email')}
                       />
                     </div>
@@ -349,7 +350,8 @@ function CustomerLoginForm() {
                         id="cust-login-password"
                         type={showPass ? 'text' : 'password'}
                         placeholder="••••••••"
-                        className={`form-input pr-10 ${loginErrors.password ? 'error' : ''}`}
+                        className={`form-input ${loginErrors.password ? 'error' : ''}`}
+                        style={{ paddingRight: '2.5rem' }}
                         {...regLogin('password')}
                       />
                       <button
@@ -382,7 +384,8 @@ function CustomerLoginForm() {
                         id="cust-reg-name"
                         type="text"
                         placeholder="Your full name"
-                        className={`form-input pl-10 ${signupErrors.name ? 'error' : ''}`}
+                        className={`form-input ${signupErrors.name ? 'error' : ''}`}
+                        style={{ paddingLeft: '2.5rem' }}
                         {...regSignup('name')}
                       />
                     </div>
@@ -397,7 +400,8 @@ function CustomerLoginForm() {
                         id="cust-reg-email"
                         type="email"
                         placeholder="your@email.com"
-                        className={`form-input pl-10 ${signupErrors.email ? 'error' : ''}`}
+                        className={`form-input ${signupErrors.email ? 'error' : ''}`}
+                        style={{ paddingLeft: '2.5rem' }}
                         {...regSignup('email')}
                       />
                     </div>
@@ -427,7 +431,8 @@ function CustomerLoginForm() {
                         id="cust-reg-password"
                         type={showPass ? 'text' : 'password'}
                         placeholder="••••••••"
-                        className={`form-input pr-10 ${signupErrors.password ? 'error' : ''}`}
+                        className={`form-input ${signupErrors.password ? 'error' : ''}`}
+                        style={{ paddingRight: '2.5rem' }}
                         {...regSignup('password')}
                       />
                       <button
