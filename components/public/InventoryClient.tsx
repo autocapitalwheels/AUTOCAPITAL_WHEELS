@@ -1,0 +1,453 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { SlidersHorizontal, LayoutGrid, List, X, ChevronDown, Search } from 'lucide-react';
+import VehicleCard from './VehicleCard';
+import type { Vehicle, VehicleSortOption } from '@/types';
+import { CAR_MAKES, FUEL_TYPES, TRANSMISSION_TYPES, BODY_TYPES, VEHICLE_CATEGORIES, SORT_OPTIONS } from '@/lib/constants';
+
+interface Filters {
+  search: string;
+  make: string;
+  fuel_type: string;
+  transmission: string;
+  body_type: string;
+  vehicle_category: string;
+  min_price: string;
+  max_price: string;
+  min_year: string;
+  max_year: string;
+  availability: string;
+}
+
+const defaultFilters: Filters = {
+  search: '',
+  make: '',
+  fuel_type: '',
+  transmission: '',
+  body_type: '',
+  vehicle_category: '',
+  min_price: '',
+  max_price: '',
+  min_year: '',
+  max_year: '',
+  availability: '',
+};
+
+export default function InventoryClient() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState<VehicleSortOption>('recommended');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [showFilters, setShowFilters] = useState(false);
+
+  const [filters, setFilters] = useState<Filters>(() => ({
+    ...defaultFilters,
+    search: searchParams.get('search') || '',
+    make: searchParams.get('make') || '',
+    fuel_type: searchParams.get('fuel_type') || '',
+    transmission: searchParams.get('transmission') || '',
+    body_type: searchParams.get('body_type') || '',
+    vehicle_category: searchParams.get('vehicle_category') || '',
+    min_price: searchParams.get('min_price') || '',
+    max_price: searchParams.get('max_price') || '',
+    min_year: searchParams.get('min_year') || '',
+    max_year: searchParams.get('max_year') || '',
+    availability: searchParams.get('availability') || '',
+  }));
+
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
+
+  const fetchVehicles = useCallback(async (currentFilters: Filters, currentPage: number, currentSort: VehicleSortOption) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set('page', currentPage.toString());
+      params.set('per_page', '12');
+      params.set('sort', currentSort);
+      Object.entries(currentFilters).forEach(([key, value]) => {
+        if (value) params.set(key, value);
+      });
+
+      const res = await fetch(`/api/vehicles?${params.toString()}`);
+      const json = await res.json();
+      if (json.success) {
+        setVehicles(json.data || []);
+        setTotal(json.total || 0);
+        setTotalPages(json.total_pages || 1);
+      }
+    } catch (err) {
+      console.error('Failed to fetch vehicles:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchVehicles(filters, page, sort);
+  }, [filters, page, sort, fetchVehicles]);
+
+  const updateFilter = (key: keyof Filters, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPage(1);
+  };
+
+  const clearFilters = () => {
+    setFilters(defaultFilters);
+    setPage(1);
+  };
+
+  const FilterPanel = () => (
+    <div className="space-y-0">
+      {/* Search */}
+      <div className="pb-4 border-b border-neutral-200">
+        <div className="relative">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+          <input
+            type="text"
+            placeholder="Search make, model..."
+            value={filters.search}
+            onChange={(e) => updateFilter('search', e.target.value)}
+            className="form-input pl-9 text-sm"
+            id="inventory-search"
+          />
+        </div>
+      </div>
+
+      {/* Make */}
+      <div>
+        <p className="filter-section-title">Make</p>
+        <select
+          value={filters.make}
+          onChange={(e) => updateFilter('make', e.target.value)}
+          className="form-input text-sm"
+          id="filter-make"
+        >
+          <option value="">All Makes</option>
+          {CAR_MAKES.map((make) => <option key={make} value={make}>{make}</option>)}
+        </select>
+      </div>
+
+      {/* Body Type */}
+      <div>
+        <p className="filter-section-title">Body Type</p>
+        <div className="flex flex-wrap gap-2">
+          {BODY_TYPES.map((type) => (
+            <button
+              key={type}
+              onClick={() => updateFilter('body_type', filters.body_type === type ? '' : type)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
+                filters.body_type === type
+                  ? 'bg-neutral-900 text-white border-neutral-900'
+                  : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
+              }`}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Fuel */}
+      <div>
+        <p className="filter-section-title">Fuel Type</p>
+        <div className="flex flex-wrap gap-2">
+          {FUEL_TYPES.map((fuel) => (
+            <button
+              key={fuel}
+              onClick={() => updateFilter('fuel_type', filters.fuel_type === fuel ? '' : fuel)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
+                filters.fuel_type === fuel
+                  ? 'bg-neutral-900 text-white border-neutral-900'
+                  : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
+              }`}
+            >
+              {fuel}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Transmission */}
+      <div>
+        <p className="filter-section-title">Transmission</p>
+        <div className="flex flex-wrap gap-2">
+          {TRANSMISSION_TYPES.map((trans) => (
+            <button
+              key={trans}
+              onClick={() => updateFilter('transmission', filters.transmission === trans ? '' : trans)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
+                filters.transmission === trans
+                  ? 'bg-neutral-900 text-white border-neutral-900'
+                  : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
+              }`}
+            >
+              {trans}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Price Range */}
+      <div>
+        <p className="filter-section-title">Budget</p>
+        <div className="flex gap-2">
+          <input
+            type="number"
+            placeholder="Min ₹"
+            value={filters.min_price}
+            onChange={(e) => updateFilter('min_price', e.target.value)}
+            className="form-input text-sm w-full"
+          />
+          <input
+            type="number"
+            placeholder="Max ₹"
+            value={filters.max_price}
+            onChange={(e) => updateFilter('max_price', e.target.value)}
+            className="form-input text-sm w-full"
+          />
+        </div>
+      </div>
+
+      {/* Year Range */}
+      <div>
+        <p className="filter-section-title">Year</p>
+        <div className="flex gap-2">
+          <input
+            type="number"
+            placeholder="From"
+            value={filters.min_year}
+            onChange={(e) => updateFilter('min_year', e.target.value)}
+            className="form-input text-sm w-full"
+            min="1990"
+            max={new Date().getFullYear()}
+          />
+          <input
+            type="number"
+            placeholder="To"
+            value={filters.max_year}
+            onChange={(e) => updateFilter('max_year', e.target.value)}
+            className="form-input text-sm w-full"
+            min="1990"
+            max={new Date().getFullYear()}
+          />
+        </div>
+      </div>
+
+      {/* Availability */}
+      <div>
+        <p className="filter-section-title">Availability</p>
+        <div className="flex gap-2">
+          {['Available', 'Reserved'].map((avail) => (
+            <button
+              key={avail}
+              onClick={() => updateFilter('availability', filters.availability === avail ? '' : avail)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
+                filters.availability === avail
+                  ? 'bg-neutral-900 text-white border-neutral-900'
+                  : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
+              }`}
+            >
+              {avail}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Clear */}
+      {activeFilterCount > 0 && (
+        <button
+          onClick={clearFilters}
+          className="w-full mt-4 text-sm text-red-600 hover:text-red-700 font-medium py-2 border border-red-200 rounded-md hover:bg-red-50 transition-colors"
+        >
+          Clear All Filters ({activeFilterCount})
+        </button>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#faf9f6]/30">
+      {/* Page Header */}
+      <div className="bg-[#faf9f6] border-b border-neutral-200/60 py-8 px-4">
+        <div className="container-custom">
+          <h1 className="font-display font-black text-3xl text-neutral-900">Find Your Next Car</h1>
+          <p className="text-neutral-500 text-sm font-light mt-1">Browse our curated selection of quality pre-owned vehicles</p>
+        </div>
+      </div>
+
+      <div className="container-custom py-6">
+        <div className="flex gap-6">
+          {/* Desktop Filter Sidebar */}
+          <aside className="hidden lg:block w-64 flex-shrink-0">
+            <div className="bg-white rounded-xl border border-neutral-200/80 p-5 sticky top-20">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-display font-bold text-base text-neutral-900">Filters</h2>
+                {activeFilterCount > 0 && (
+                  <span className="text-xs bg-neutral-900 text-white px-2 py-0.5 rounded-full">{activeFilterCount}</span>
+                )}
+              </div>
+              <FilterPanel />
+            </div>
+          </aside>
+
+          {/* Main Content */}
+          <main className="flex-1 min-w-0">
+            {/* Toolbar */}
+            <div className="flex items-center justify-between gap-3 mb-5">
+              <div className="flex items-center gap-3">
+                {/* Mobile filter toggle */}
+                <button
+                  onClick={() => setShowFilters(true)}
+                  className="lg:hidden flex items-center gap-2 btn-secondary text-sm py-2 px-4"
+                  id="show-filters-btn"
+                >
+                  <SlidersHorizontal size={16} />
+                  Filters
+                  {activeFilterCount > 0 && (
+                    <span className="bg-neutral-900 text-white text-xs px-1.5 py-0.5 rounded-full">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+                <p className="text-sm text-neutral-500">
+                  {loading ? 'Loading...' : (
+                    <span>
+                      <span className="font-semibold text-neutral-900">{total}</span>
+                      {' '}car{total !== 1 ? 's' : ''} available
+                    </span>
+                  )}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Sort */}
+                <div className="relative">
+                  <select
+                    value={sort}
+                    onChange={(e) => { setSort(e.target.value as VehicleSortOption); setPage(1); }}
+                    className="form-input text-sm pr-8 py-2 appearance-none cursor-pointer"
+                    id="sort-select"
+                  >
+                    {SORT_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none" />
+                </div>
+
+                {/* View toggle */}
+                <div className="hidden sm:flex border border-neutral-200 rounded-md overflow-hidden">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 ${viewMode === 'grid' ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:bg-neutral-50'}`}
+                    aria-label="Grid view"
+                  >
+                    <LayoutGrid size={16} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 ${viewMode === 'list' ? 'bg-neutral-900 text-white' : 'text-neutral-400 hover:bg-neutral-50'}`}
+                    aria-label="List view"
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Results */}
+            {loading ? (
+              <div className={`grid gap-5 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className="rounded-xl border border-neutral-100 overflow-hidden bg-white">
+                    <div className="skeleton h-48 w-full" />
+                    <div className="p-4 space-y-2">
+                      <div className="skeleton h-5 w-3/4" />
+                      <div className="skeleton h-4 w-1/2" />
+                      <div className="skeleton h-9 w-full mt-3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : vehicles.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="text-6xl mb-4">🔍</div>
+                <h3 className="font-display font-bold text-xl text-neutral-900 mb-2">No Vehicles Found</h3>
+                <p className="text-neutral-500 mb-6">Try adjusting your filters or search terms.</p>
+                <div className="flex gap-3 justify-center">
+                  <button onClick={clearFilters} className="btn-primary">Clear Filters</button>
+                  <a href="https://wa.me/918800243707" target="_blank" rel="noopener noreferrer" className="btn-secondary">
+                    Contact Us
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className={`grid gap-5 ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
+                  {vehicles.map((vehicle) => (
+                    <VehicleCard key={vehicle.id} vehicle={vehicle} variant={viewMode} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    <button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="px-4 py-2 text-sm border border-neutral-200 rounded-md disabled:opacity-40 hover:bg-neutral-50 transition-colors"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-sm text-neutral-500">
+                      Page {page} of {totalPages}
+                    </span>
+                    <button
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className="px-4 py-2 text-sm border border-neutral-200 rounded-md disabled:opacity-40 hover:bg-neutral-50 transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </main>
+        </div>
+      </div>
+
+      {/* Mobile Filter Drawer */}
+      {showFilters && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setShowFilters(false)} />
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl max-h-[85vh] overflow-y-auto lg:hidden">
+            <div className="sticky top-0 bg-white border-b border-neutral-200 px-5 py-4 flex items-center justify-between">
+              <h3 className="font-display font-bold text-base">Filters</h3>
+              <button onClick={() => setShowFilters(false)} className="p-1.5 rounded-md hover:bg-neutral-100" aria-label="Close filters">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-5">
+              <FilterPanel />
+              <button
+                onClick={() => setShowFilters(false)}
+                className="btn-primary w-full mt-4 py-3 justify-center"
+              >
+                Show {total} Results
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

@@ -1,0 +1,48 @@
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import VehicleCard from './VehicleCard';
+import type { Vehicle } from '@/types';
+
+interface FeaturedInventoryProps {
+  vehicles: Vehicle[];
+}
+
+export default function FeaturedInventory({ vehicles }: FeaturedInventoryProps) {
+  if (vehicles.length === 0) return null;
+
+  return (
+    <section className="py-8 bg-[#faf9f6]/30">
+      <div className="container-custom">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+          <div>
+            <div className="divider" />
+            <p className="section-label mb-2">Our Inventory</p>
+            <h2 className="font-display font-bold text-3xl sm:text-4xl text-neutral-900">Featured Cars</h2>
+          </div>
+          <Link
+            href="/cars"
+            className="flex items-center gap-2 text-sm font-semibold text-neutral-700 hover:text-neutral-900 group transition-colors"
+          >
+            View All Cars
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {vehicles.map((vehicle) => (
+            <VehicleCard key={vehicle.id} vehicle={vehicle} />
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center mt-10">
+          <Link href="/cars" className="btn-secondary px-8 py-3">
+            See All Available Cars
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
