@@ -57,11 +57,22 @@ export default function Header() {
   const headerBg = isHomePage
     ? isScrolled
       ? 'bg-white/95 backdrop-blur-md border-b border-neutral-200/50 shadow-sm'
-      : 'bg-white/80 backdrop-blur-sm'
+      : 'bg-transparent'
     : 'bg-white border-b border-neutral-200/60';
 
-  const textColor = 'text-neutral-900';
-  const logoColor = 'text-neutral-950';
+  const isDarkHeader = isHomePage && !isScrolled;
+
+  const textColor = isDarkHeader
+    ? 'text-white/80 hover:text-white'
+    : 'text-neutral-600 hover:text-neutral-950';
+
+  const contactColor = isDarkHeader
+    ? 'text-white/95 hover:text-white'
+    : 'text-neutral-800 hover:text-neutral-950';
+
+  const burgerColor = isDarkHeader
+    ? 'text-white hover:bg-white/10'
+    : 'text-neutral-800 hover:bg-neutral-100';
 
   return (
     <>
@@ -83,15 +94,15 @@ export default function Header() {
               />
               <div className="flex flex-col items-center justify-center leading-none">
                 <div className="font-display font-black text-base lg:text-lg tracking-tight italic select-none">
-                  <span className="text-[#5a6065]">AUTO</span>
+                  <span className={isDarkHeader ? 'text-white/90' : 'text-[#5a6065]'}>AUTO</span>
                   <span className="text-[#b48d36]">CAPITAL</span>
                 </div>
                 <div className="flex items-center gap-1 -mt-0.5 select-none w-full justify-center">
-                  <span className="h-[1px] w-2 bg-gradient-to-r from-transparent to-[#5a6065]/50" />
-                  <span className="font-display font-black text-[8px] tracking-[0.25em] text-[#5a6065] uppercase">
+                  <span className={`h-[1px] w-2 bg-gradient-to-r from-transparent ${isDarkHeader ? 'to-white/40' : 'to-[#5a6065]/50'}`} />
+                  <span className={`font-display font-black text-[8px] tracking-[0.25em] uppercase ${isDarkHeader ? 'text-white/90' : 'text-[#5a6065]'}`}>
                     WHEELS
                   </span>
-                  <span className="h-[1px] w-2 bg-gradient-to-l from-transparent to-[#b48d36]/50" />
+                  <span className={`h-[1px] w-2 bg-gradient-to-l from-transparent ${isDarkHeader ? 'to-amber-500/40' : 'to-[#b48d36]/50'}`} />
                 </div>
               </div>
             </Link>
@@ -111,7 +122,7 @@ export default function Header() {
                   className={`relative px-3.5 py-2 text-[11px] font-bold tracking-widest uppercase transition-all duration-200 ${
                     pathname === link.href
                       ? 'text-amber-500'
-                      : 'text-neutral-600 hover:text-neutral-950'
+                      : textColor
                   }`}
                 >
                   {link.label}
@@ -127,9 +138,9 @@ export default function Header() {
               {/* Phone contact */}
               <a
                 href="tel:+918800243707"
-                className="hidden xl:flex items-center gap-2 text-xs font-bold text-neutral-800 hover:text-neutral-950"
+                className={`hidden xl:flex items-center gap-2 text-xs font-bold transition-colors duration-200 ${contactColor}`}
               >
-                <Phone size={14} className="text-neutral-600" />
+                <Phone size={14} className={isDarkHeader ? 'text-white/80' : 'text-neutral-600'} />
                 +91 88002 43707
               </a>
 
@@ -167,7 +178,7 @@ export default function Header() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden p-2 rounded-md text-neutral-800 hover:bg-neutral-100 transition-colors"
+                className={`lg:hidden p-2 rounded-md transition-colors duration-200 ${burgerColor}`}
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
