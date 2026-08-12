@@ -160,10 +160,10 @@ export default function InventoryClient() {
             <button
               key={type}
               onClick={() => updateFilter('body_type', filters.body_type === type ? '' : type)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-200 cursor-pointer ${
                 filters.body_type === type
-                  ? 'bg-neutral-900 text-white border-neutral-900'
-                  : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
+                  ? 'border-[#b48d36] bg-[#b48d36]/10 text-white shadow-[0_0_12px_rgba(180,141,54,0.15)]'
+                  : 'border-neutral-800 text-neutral-400 hover:border-[#b48d36]/40 hover:bg-[#b48d36]/5'
               }`}
             >
               {type}
@@ -180,10 +180,10 @@ export default function InventoryClient() {
             <button
               key={fuel}
               onClick={() => updateFilter('fuel_type', filters.fuel_type === fuel ? '' : fuel)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-200 cursor-pointer ${
                 filters.fuel_type === fuel
-                  ? 'bg-neutral-900 text-white border-neutral-900'
-                  : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
+                  ? 'border-[#b48d36] bg-[#b48d36]/10 text-white shadow-[0_0_12px_rgba(180,141,54,0.15)]'
+                  : 'border-neutral-800 text-neutral-400 hover:border-[#b48d36]/40 hover:bg-[#b48d36]/5'
               }`}
             >
               {fuel}
@@ -200,10 +200,10 @@ export default function InventoryClient() {
             <button
               key={trans}
               onClick={() => updateFilter('transmission', filters.transmission === trans ? '' : trans)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-200 cursor-pointer ${
                 filters.transmission === trans
-                  ? 'bg-neutral-900 text-white border-neutral-900'
-                  : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
+                  ? 'border-[#b48d36] bg-[#b48d36]/10 text-white shadow-[0_0_12px_rgba(180,141,54,0.15)]'
+                  : 'border-neutral-800 text-neutral-400 hover:border-[#b48d36]/40 hover:bg-[#b48d36]/5'
               }`}
             >
               {trans}
@@ -266,10 +266,10 @@ export default function InventoryClient() {
             <button
               key={avail}
               onClick={() => updateFilter('availability', filters.availability === avail ? '' : avail)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md border transition-all ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all duration-200 cursor-pointer ${
                 filters.availability === avail
-                  ? 'bg-neutral-900 text-white border-neutral-900'
-                  : 'border-neutral-200 text-neutral-600 hover:border-neutral-400'
+                  ? 'border-[#b48d36] bg-[#b48d36]/10 text-white shadow-[0_0_12px_rgba(180,141,54,0.15)]'
+                  : 'border-neutral-800 text-neutral-400 hover:border-[#b48d36]/40 hover:bg-[#b48d36]/5'
               }`}
             >
               {avail}
