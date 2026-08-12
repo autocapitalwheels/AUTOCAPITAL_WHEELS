@@ -56,9 +56,9 @@ export default function Header() {
 
   const headerBg = isHomePage
     ? isScrolled
-      ? 'bg-[#0a0a0c]/90 backdrop-blur-md border-b border-neutral-800/80 shadow-md'
+      ? 'bg-[#0a0a0c] border-b border-neutral-800/80 shadow-md'
       : 'bg-transparent'
-    : 'bg-[#0a0a0c]/95 border-b border-neutral-800/80';
+    : 'bg-[#0a0a0c] border-b border-neutral-800/80';
 
   const isDarkHeader = true;
 
