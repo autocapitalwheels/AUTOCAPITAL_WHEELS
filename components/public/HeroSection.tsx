@@ -48,114 +48,112 @@ export default function HeroSection() {
   }, [slides]);
 
   return (
-    <section className="relative pt-24 pb-12 lg:pt-44 lg:pb-36 overflow-hidden min-h-[70vh] lg:min-h-[90vh] flex items-center bg-white">
-      {/* Full section background image slideshow */}
-      {slides.map((slide, index) => {
-        const isVideo = slide.endsWith('.mp4') || slide.endsWith('.webm') || slide.includes('/hero/hero_slide_') && !slide.includes('.png') && !slide.includes('.jpg');
-        return (
-          <div 
-            key={slide}
-            className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ease-in-out ${
-              index === activeSlide ? 'opacity-100 z-0' : 'opacity-0 z-0'
-            }`}
-          >
-            {isVideo ? (
-              <video
-                src={slide}
-                className="w-full h-full object-cover"
-                autoPlay
-                muted
-                loop
-                playsInline
-              />
-            ) : (
-              <div
-                className="w-full h-full bg-cover bg-right md:bg-center"
-                style={{
-                  backgroundImage: `url('${slide}')`,
-                }}
-              />
-            )}
-          </div>
-        );
-      })}
-      
-      {/* Light gradient overlay on the left/bottom to ensure high text readability */}
-      <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent lg:bg-gradient-to-r lg:from-white lg:via-white/95 lg:to-white/10 pointer-events-none z-10" />
-
-      <div className="container-custom relative z-20 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+    <section className="relative w-full bg-white overflow-hidden pt-24 lg:pt-28 min-h-[75vh] lg:min-h-[85vh] flex flex-col justify-center border-b border-neutral-100">
+      <div className="container-custom py-8 lg:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           
-          {/* Left Text Content */}
-          <div className="lg:col-span-6 space-y-6 lg:space-y-8 animate-slide-up">
+          {/* Left side content */}
+          <div className="space-y-6 lg:space-y-8 animate-slide-up z-10">
             <div className="space-y-4">
-              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-900 leading-[1.15]">
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-neutral-900 leading-[1.12]">
                 Trusted Cars.
                 <br />
-                <span className="text-amber-500">Trusted Deals.</span>
+                <span className="text-metallic-gold">Trusted Deals.</span>
               </h1>
               
-              <p className="text-neutral-600 text-xs sm:text-sm max-w-md font-light leading-relaxed">
-                We buy and sell second hand cars like Baleno, Glanza, Swift, WagonR and more.
+              <p className="text-neutral-600 text-sm sm:text-base max-w-md font-light leading-relaxed">
+                We buy and sell certified, premium pre-owned cars. Get transparent pricing, 100+ checkpoint verified vehicles, and expert support.
               </p>
             </div>
 
             {/* Horizontal Trust Badges */}
-            <div className="grid grid-cols-3 gap-4 pt-2 max-w-md">
-              <div className="flex gap-2.5 items-start">
-                <div className="text-amber-500 mt-0.5 flex-shrink-0">
-                  <ShieldCheck size={16} className="stroke-[2]" />
+            <div className="grid grid-cols-3 gap-4 border-t border-neutral-100 pt-6 max-w-md">
+              <div className="flex flex-col gap-1 items-start">
+                <div className="text-amber-500 flex-shrink-0">
+                  <ShieldCheck size={20} className="stroke-[2]" />
                 </div>
                 <div>
-                  <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-wide">Verified Cars</h3>
-                  <p className="text-[8px] text-neutral-400 font-light mt-0.5 leading-tight">Quality checked & verified</p>
+                  <h3 className="text-[11px] font-bold text-neutral-900 uppercase tracking-wider">Verified Cars</h3>
+                  <p className="text-[9px] text-neutral-400 font-light mt-0.5 leading-tight">100+ Checkpoints</p>
                 </div>
               </div>
 
-              <div className="flex gap-2.5 items-start">
-                <div className="text-amber-500 mt-0.5 flex-shrink-0">
-                  <Tag size={16} className="stroke-[2]" />
+              <div className="flex flex-col gap-1 items-start">
+                <div className="text-amber-500 flex-shrink-0">
+                  <Tag size={20} className="stroke-[2]" />
                 </div>
                 <div>
-                  <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-wide">Best Value</h3>
-                  <p className="text-[8px] text-neutral-400 font-light mt-0.5 leading-tight">Fair quotes, best deals</p>
+                  <h3 className="text-[11px] font-bold text-neutral-900 uppercase tracking-wider">Best Value</h3>
+                  <p className="text-[9px] text-neutral-400 font-light mt-0.5 leading-tight">Fair Market Rates</p>
                 </div>
               </div>
 
-              <div className="flex gap-2.5 items-start">
-                <div className="text-amber-500 mt-0.5 flex-shrink-0">
-                  <Headphones size={16} className="stroke-[2]" />
+              <div className="flex flex-col gap-1 items-start">
+                <div className="text-amber-500 flex-shrink-0">
+                  <Headphones size={20} className="stroke-[2]" />
                 </div>
                 <div>
-                  <h3 className="text-[10px] font-bold text-neutral-900 uppercase tracking-wide">Expert Support</h3>
-                  <p className="text-[8px] text-neutral-400 font-light mt-0.5 leading-tight">We're here to help</p>
+                  <h3 className="text-[11px] font-bold text-neutral-900 uppercase tracking-wider">Expert Support</h3>
+                  <p className="text-[9px] text-neutral-400 font-light mt-0.5 leading-tight">Hassle-Free Deal</p>
                 </div>
               </div>
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <Link
                 href="/cars"
-                className="inline-flex items-center justify-center gap-2 bg-[#171717] hover:bg-neutral-800 text-white font-bold px-8 py-3.5 rounded-lg text-xs tracking-widest uppercase transition-all duration-300"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-neutral-950 hover:bg-neutral-800 text-white font-bold px-8 py-4 rounded-xl text-xs tracking-widest uppercase transition-all duration-300 shadow-sm hover:shadow"
                 id="hero-explore-cars"
               >
-                Browse Inventory
+                BROWSE INVENTORY
                 <ArrowRight size={14} />
               </Link>
               <Link
                 href="/sell"
-                className="inline-flex items-center justify-center gap-2 border border-neutral-200 hover:border-neutral-950 bg-white text-neutral-900 font-bold px-8 py-3.5 rounded-lg text-xs tracking-widest uppercase transition-all duration-300"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-neutral-200 hover:border-neutral-950 bg-white text-neutral-900 font-bold px-8 py-4 rounded-xl text-xs tracking-widest uppercase transition-all duration-300 shadow-sm hover:shadow"
                 id="hero-sell-car"
               >
-                Sell Your Car
+                SELL YOUR CAR
                 <ArrowRight size={14} />
               </Link>
             </div>
           </div>
 
-          {/* Right spacer to keep the layout wide and allow image background visibility */}
-          <div className="lg:col-span-6 min-h-[300px] lg:min-h-[400px] pointer-events-none" />
+          {/* Right side the cars image / slideshow */}
+          <div className="relative w-full aspect-[4/3] lg:aspect-square xl:aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden shadow-lg border border-neutral-100 bg-neutral-900 z-0">
+            {slides.map((slide, index) => {
+              const isVideo = slide.endsWith('.mp4') || slide.endsWith('.webm') || slide.includes('/hero/hero_slide_') && !slide.includes('.png') && !slide.includes('.jpg');
+              return (
+                <div 
+                  key={slide}
+                  className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ease-in-out ${
+                    index === activeSlide ? 'opacity-100 z-0' : 'opacity-0 z-0'
+                  }`}
+                >
+                  {isVideo ? (
+                    <video
+                      src={slide}
+                      className="w-full h-full object-cover object-center"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={slide}
+                      alt="Premium Pre-Owned Cars"
+                      className="w-full h-full object-cover object-center"
+                    />
+                  )}
+                </div>
+              );
+            })}
+            
+            {/* Soft shade overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent pointer-events-none" />
+          </div>
 
         </div>
       </div>
